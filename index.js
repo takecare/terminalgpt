@@ -2,7 +2,12 @@ const { Configuration, OpenAIApi } = require("openai");
 const { encode, decode } = require('gpt-3-encoder');
 const { Command } = require('commander');
 
-require('dotenv').config();
+require('dotenv').config(); // load .env file into process.env
+
+if (!process.env.OPENAI_API_KEY) {
+  console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
+  process.exit(1);
+}
 
 const DEFAULT_MODEL = "x";
 
