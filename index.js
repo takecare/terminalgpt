@@ -1,6 +1,7 @@
 const { Configuration, OpenAIApi } = require("openai");
-const { encode, decode } = require("gpt-3-encoder");
 const { Command } = require("commander");
+
+const { countTokens } = require("./tokenizer");
 
 require("dotenv").config(); // load .env file into process.env
 
@@ -28,10 +29,10 @@ program
 program
   .command("question")
   .alias("q")
-  .description("Ask a single (one-shot) question to one of OpenAI's model.")
+  .description("Ask a single (one-shot) question to one of OpenAI's models.")
   .argument("<question>", "The question to ask.")
   .action((str, options) => {
-    // const limit = options.first ? 1 : undefined;
+    //
   });
 
 program
@@ -100,8 +101,7 @@ const prompt = assistantMessage("You are a helpful assistant");
 messages.push(prompt);
 let count = 0;
 for (message of messages) {
-  const encoded = encode(message.content);
-  count += encoded.length;
+  count += countTokens(message);
 }
 console.log(`prompt estimated token count: ${count}`);
 
