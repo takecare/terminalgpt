@@ -1,8 +1,8 @@
 const { Configuration, OpenAIApi } = require("openai");
-const { encode, decode } = require('gpt-3-encoder');
-const { Command } = require('commander');
+const { encode, decode } = require("gpt-3-encoder");
+const { Command } = require("commander");
 
-require('dotenv').config(); // load .env file into process.env
+require("dotenv").config(); // load .env file into process.env
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
@@ -29,31 +29,29 @@ program
   .command("question")
   .alias("q")
   .description("Ask a single (one-shot) question to one of OpenAI's model.")
-  .argument('<question>', 'The question to ask.')
-  // .option('-s, --separator <char>', 'separator character', ',')
+  .argument("<question>", "The question to ask.")
   .action((str, options) => {
     // const limit = options.first ? 1 : undefined;
-    //
   });
 
 program
-  .command('prompt')
-  .alias('p')
-  .description('...')
+  .command("prompt")
+  .alias("p")
+  .description("...")
   .action((str, options) => {
     //
   });
 
 program
-  .command('interactive')
+  .command("interactive")
   .alias("i")
-  .description('...')
+  .description("...")
   .action((str, options) => {
     //
   });
 
 program
-  .command('default', { hidden: true, isDefault: true })
+  .command("default", { hidden: true, isDefault: true })
   .action((str, options) => {
     if (program.args.length == 0) {
       console.log("default to interactive mode");
