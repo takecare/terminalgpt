@@ -1,12 +1,14 @@
-// tokenizer
-
 const { encode, decode } = require("gpt-3-encoder");
 
-function countTokens(message) {
+function countTokens(context) {
+  let count = 0;
+  for (message of context.messages) {
     const encoded = encode(message.content);
-    return encoded.length;
+    count += encoded.length;
+  }
+  return count;
 }
 
 module.exports = {
-    countTokens,
+  countTokens,
 };

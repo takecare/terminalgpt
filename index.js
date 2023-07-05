@@ -2,6 +2,7 @@ const { Configuration, OpenAIApi } = require("openai");
 const { Command } = require("commander");
 
 const { countTokens } = require("./tokenizer");
+const { Context, UserMessage, Message } = require("./context");
 
 require("dotenv").config(); // load .env file into process.env
 
@@ -74,20 +75,6 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 
-const context = (context) => {
-  return {"role": "system", "content": context || "You are a helpful assistant."}
-}
-
-const userMessage = (message) => {
-  return {"role": "user", "content": message}
-};
-
-const assistantMessage = (message) => {
-  return {"role": "assistant", "content": message}
-}
-
-const messages = [context()];
-
 const request = async (messages) => {
   return await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
@@ -96,14 +83,18 @@ const request = async (messages) => {
   });
 };
 
+const context = new Context();
+context.add(new UserMessage("who are you?"));
+context.add(new Message("role", "content"));
+console.log(countTokens(context));
 
-const prompt = assistantMessage("You are a helpful assistant");
-messages.push(prompt);
-let count = 0;
-for (message of messages) {
-  count += countTokens(message);
-}
-console.log(`prompt estimated token count: ${count}`);
+// const prompt = assistantMessage("You are a helpful assistant");
+// messages.push(prompt);
+// let count = 0;
+// for (message of messages) {
+//   count += countTokens(message);
+// }
+// console.log(`prompt estimated token count: ${count}`);
 
 // messages.push(userMessage("can you tell me about s. joão festivities in porto?"));
 // request(messages)
