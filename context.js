@@ -56,7 +56,6 @@ class Context {
 }
 
 module.exports = {
-  Message,
   UserMessage,
   AssistantMessage,
   Context,

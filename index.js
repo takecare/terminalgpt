@@ -2,7 +2,8 @@ const { Configuration, OpenAIApi } = require("openai");
 const { Command } = require("commander");
 
 const { countTokens } = require("./tokenizer");
-const { Context, UserMessage, Message } = require("./context");
+const { Context, UserMessage } = require("./context");
+const { question, prompt, interactive } = require("./commands");
 
 require("dotenv").config(); // load .env file into process.env
 
@@ -32,41 +33,31 @@ program
   .alias("q")
   .description("Ask a single (one-shot) question to one of OpenAI's models.")
   .argument("<question>", "The question to ask.")
-  .action((str, options) => {
-    //
-  });
+  .action(question);
 
 program
   .command("prompt")
   .alias("p")
   .description("...")
-  .action((str, options) => {
-    //
-  });
+  .action(prompt);
 
 program
   .command("interactive")
   .alias("i")
   .description("...")
-  .action((str, options) => {
-    //
-  });
+  .action(interactive);
 
 program
   .command("default", { hidden: true, isDefault: true })
   .action((str, options) => {
     if (program.args.length == 0) {
-      console.log("default to interactive mode");
+      interactive(program.args, program.opts());
     } else if (program.args.length > 0) {
-      console.log("default to question mode");
+      question(program.args, program.opts());
     }
   });
 
 program.parse();
-
-console.log(program.args);
-console.log(program.opts());
-
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -74,27 +65,10 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-
-const request = async (messages) => {
-  return await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: messages,
-    // temperature: 0.6,
-  });
-};
-
 const context = new Context();
 context.add(new UserMessage("who are you?"));
-context.add(new Message("role", "content"));
-console.log(countTokens(context));
 
-// const prompt = assistantMessage("You are a helpful assistant");
-// messages.push(prompt);
-// let count = 0;
-// for (message of messages) {
-//   count += countTokens(message);
-// }
-// console.log(`prompt estimated token count: ${count}`);
+// console.log(countTokens(context));
 
 // messages.push(userMessage("can you tell me about s. joão festivities in porto?"));
 // request(messages)
