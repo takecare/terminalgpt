@@ -6,21 +6,23 @@ async function request(messages) {
     });
   };
 
-function prompt(args, options) {
+const prompt = (context) => async function(args, options) {
     console.log("prompt mode");
     console.log("\targs:", args);
     console.log("\topts:", options);
     // TODO
 }
 
-async function question(args, options) {
+const question = (context) => async function(args, options) {
     console.log("question mode");
     console.log("\targs:", args);
     console.log("\topts:", options);
     // TODO
+    console.log(context.messages);
+    // const response = await request();
 }
 
-function interactive(args, options) {
+const interactive = (context) => async function(args, options) {
     console.log("interactive mode");
     console.log("\targs:", args);
     console.log("\topts:", options);

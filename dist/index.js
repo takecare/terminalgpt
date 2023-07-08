@@ -16,19 +16,22 @@ if (!process.env.OPENAI_API_KEY) {
 }
 const DEFAULT_MODEL = "x";
 const program = new Command();
+const context = new Context();
 program.name("TerminalGPT").description("CLI tool to interact with the OpenAI API.").version("0.0.1");
 program.option("-m, --model <model>", "Define the model you're interacting with.", DEFAULT_MODEL);
-program.command("question").alias("q").description("Ask a single (one-shot) question to one of OpenAI's models.").argument("<question>", "The question to ask.").action(question);
-program.command("prompt").alias("p").description("...").action(prompt);
-program.command("interactive").alias("i").description("...").action(interactive);
+program.command("question").alias("q").description("Ask a single (one-shot) question to one of OpenAI's models.").argument("<question>", "The question to ask.").action(question(context));
+program.command("prompt").alias("p").description("...").action(prompt(context));
+program.command("interactive").alias("i").description("...").action(interactive(context));
 program.command("default", {
   hidden: true,
   isDefault: true
 }).action((str, options) => {
   if (program.args.length == 0) {
-    interactive(program.args, program.opts());
+    const interact = interactive(context);
+    interact(program.args, program.opts());
   } else if (program.args.length > 0) {
-    question(program.args, program.opts());
+    const ask = question(context);
+    ask(program.args, program.opts());
   }
 });
 program.parse();
@@ -36,7 +39,6 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY
 });
 const openai = new OpenAIApi(configuration);
-const context = new Context();
 context.add(new UserMessage("who are you?"));
 render( /*#__PURE__*/React.createElement(Demo, null));
 

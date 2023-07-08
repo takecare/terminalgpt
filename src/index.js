@@ -22,6 +22,7 @@ if (!process.env.OPENAI_API_KEY) {
 const DEFAULT_MODEL = "x";
 
 const program = new Command();
+const context = new Context();
 
 program
   .name("TerminalGPT")
@@ -40,27 +41,29 @@ program
   .alias("q")
   .description("Ask a single (one-shot) question to one of OpenAI's models.")
   .argument("<question>", "The question to ask.")
-  .action(question);
+  .action(question(context));
 
 program
   .command("prompt")
   .alias("p")
   .description("...")
-  .action(prompt);
+  .action(prompt(context));
 
 program
   .command("interactive")
   .alias("i")
   .description("...")
-  .action(interactive);
+  .action(interactive(context));
 
 program
   .command("default", { hidden: true, isDefault: true })
   .action((str, options) => {
     if (program.args.length == 0) {
-      interactive(program.args, program.opts());
+      const interact = interactive(context);
+      interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      question(program.args, program.opts());
+      const ask = question(context);
+      ask(program.args, program.opts());
     }
   });
 
@@ -72,7 +75,6 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-const context = new Context();
 context.add(new UserMessage("who are you?"));
 
 render(<Demo />);
