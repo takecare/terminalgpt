@@ -1,4 +1,4 @@
-const { encode, decode } = require("gpt-3-encoder");
+import { encode, decode } from "gpt-3-encoder";
 
 function countTokens(context) {
   let count = 0;
@@ -9,6 +9,6 @@ function countTokens(context) {
   return count;
 }
 
-module.exports = {
+export {
   countTokens,
 };

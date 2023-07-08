@@ -27,7 +27,7 @@ function interactive(args, options) {
     // TODO
 }
 
-module.exports = {
+export {
     prompt,
     question,
     interactive,
