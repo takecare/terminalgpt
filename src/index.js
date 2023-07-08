@@ -4,13 +4,13 @@
 import { Command } from "commander";
 
 import { DEFAULT_MODEL } from "./gpt.js";
-import { countTokens } from "./tokenizer.js";
+// import { countTokens } from "./tokenizer.js";
 import { Context } from "./context.js";
 import { question, prompt, interactive } from "./commands.js";
 
-import React from "react";
-import { render } from "ink";
-import { Demo } from "./tui.js";
+// import React from "react";
+// import { render } from "ink";
+// import { Demo } from "./tui.js";
 
 import "dotenv/config"; // load .env file into process.env
 
@@ -70,7 +70,7 @@ program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
     console.log("default");
-    if (program.args.length == 0) {
+    if (program.args.length === 0) {
       const interact = interactive(context);
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
