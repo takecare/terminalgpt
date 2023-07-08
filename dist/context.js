@@ -1,3 +1,4 @@
+import { DEFAULT_MODEL } from "./gpt.js";
 class Message {
   #role;
   #content;
@@ -35,9 +36,11 @@ class AssistantMessage extends Message {
 }
 class Context {
   #messages;
+  model;
   constructor() {
     // TODO custom initial system/context message
     this.#messages = [new ContextMessage("You are a helpful assistant.")];
+    this.model = DEFAULT_MODEL;
   }
   add(message) {
     this.#messages.push(message);
