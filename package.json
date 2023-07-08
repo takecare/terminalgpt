@@ -10,23 +10,33 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "babel index.js src -d dist",
-    "dev": "babel src -d dist -w"
+    "dev": "babel src -d dist -w",
+    "lint": "node_modules/.bin/eslint src/",
+    "lint-fix": "node_modules/.bin/eslint src/ --fix"
   },
   "dependencies": {
     "commander": "^11.0.0",
     "dotenv": "^16.3.1",
     "gpt-3-encoder": "^1.1.4",
-    "openai": "^3.3.0",
     "ink": "^4.2.0",
+    "openai": "^3.3.0",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
     "@babel/preset-react": "^7.22.5",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.32.2",
     "import-jsx": "^5.0.0"
   },
   "babel": {
-    "presets": ["@babel/preset-react"]
+    "presets": [
+      "@babel/preset-react"
+    ]
   }
 }

@@ -1,4 +1,4 @@
-import { DEFAULT_MODEL } from "./gpt.js";
+import { DEFAULT_MODEL } from './gpt.js';
 class Message {
   #role;
   #content;
@@ -21,17 +21,17 @@ class Message {
 }
 class ContextMessage extends Message {
   constructor(content) {
-    super("system", content);
+    super('system', content);
   }
 }
 class UserMessage extends Message {
   constructor(content) {
-    super("user", content);
+    super('user', content);
   }
 }
 class AssistantMessage extends Message {
   constructor(content) {
-    super("assistant", content);
+    super('assistant', content);
   }
 }
 class Context {
@@ -39,7 +39,7 @@ class Context {
   model;
   constructor() {
     // TODO custom initial system/context message
-    this.#messages = [new ContextMessage("You are a helpful assistant.")];
+    this.#messages = [new ContextMessage('You are a helpful assistant.')];
     this.model = DEFAULT_MODEL;
   }
   add(message) {

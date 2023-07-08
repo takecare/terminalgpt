@@ -1,14 +1,14 @@
-import { encode, decode } from "gpt-3-encoder";
+import { encode, decode } from 'gpt-3-encoder'
 
-function countTokens(context) {
-  let count = 0;
+function countTokens (context) {
+  let count = 0
   for (message of context.messages) {
-    const encoded = encode(message.content);
-    count += encoded.length;
+    const encoded = encode(message.content)
+    count += encoded.length
   }
-  return count;
+  return count
 }
 
 export {
-  countTokens,
-};
+  countTokens
+}

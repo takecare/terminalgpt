@@ -1,5 +1,5 @@
-const DEFAULT_MODEL = "gpt-3.5-turbo";
+const DEFAULT_MODEL = 'gpt-3.5-turbo'
 
 export {
-    DEFAULT_MODEL,
+  DEFAULT_MODEL
 }
