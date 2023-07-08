@@ -59,6 +59,7 @@ program
   .command("interactive")
   .alias("i")
   .description("...")
+  .argument("[question...]", "An optional question to kickstart the session.")
   .action((q, _options, _command) => {
     //
     const interact = interactive(context);
@@ -67,7 +68,7 @@ program
 
 program
   .command("default", { hidden: true, isDefault: true })
-  .action((str, options) => {
+  .action((_options, _command) => {
     console.log("default")
     if (program.args.length == 0) {
       const interact = interactive(context);

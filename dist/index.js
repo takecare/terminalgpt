@@ -29,7 +29,7 @@ program.command("prompt").alias("p").description("...").action((_q, _options, _c
   const p = prompt(context);
   p(program.opts());
 });
-program.command("interactive").alias("i").description("...").action((q, _options, _command) => {
+program.command("interactive").alias("i").description("...").argument("[question...]", "An optional question to kickstart the session.").action((q, _options, _command) => {
   //
   const interact = interactive(context);
   interact(q, program.opts());
@@ -37,7 +37,7 @@ program.command("interactive").alias("i").description("...").action((q, _options
 program.command("default", {
   hidden: true,
   isDefault: true
-}).action((str, options) => {
+}).action((_options, _command) => {
   console.log("default");
   if (program.args.length == 0) {
     const interact = interactive(context);
