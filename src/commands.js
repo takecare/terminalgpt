@@ -1,18 +1,5 @@
-import { Configuration, OpenAIApi } from "openai";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
-// async function request(messages) {
-async function request(context) {
-  return await openai.createChatCompletion({
-    model: context.model,
-    messages: context.messages,
-    // temperature: 0.6,
-  });
-}
+import { UserMessage } from "./context.js";
+import { request } from "./gpt.js";
 
 const prompt = (context) =>
   async function (options) {
@@ -30,8 +17,12 @@ const question = (context) =>
     console.log("\topts:", options);
     // TODO deal with possibility of args being an array of str
     // context.add(new UserMessage(args));
-    // TODO
-    // const response = await request();
+    context.add(new UserMessage(question[0]));
+    const response = await request(context);
+    // TODO how to deal with erroneous responses?
+    const message = response.data.choices[0].message;
+    const content = message.content;
+    console.log(content);
   };
 
 const interactive = (context) =>

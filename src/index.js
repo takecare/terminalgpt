@@ -12,8 +12,6 @@ import { question, prompt, interactive } from "./commands.js";
 // import { render } from "ink";
 // import { Demo } from "./tui.js";
 
-import "dotenv/config"; // load .env file into process.env
-
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
   process.exit(1);
