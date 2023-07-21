@@ -20,4 +20,22 @@ async function request(context) {
   });
 }
 
-export { request };
+async function fakeRequest() {
+  const response = {
+    data: {
+      choices: [
+        {
+          message: {
+            content: "this is the response... ",
+          },
+        },
+      ],
+    },
+  };
+  const promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve(response), 1200);
+  });
+  return promise;
+}
+
+export { request, fakeRequest };
