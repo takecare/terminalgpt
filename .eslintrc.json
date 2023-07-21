@@ -9,5 +9,6 @@
     "sourceType": "module"
   },
   "plugins": ["react"],
+  "ignorePatterns": ["/dist/*"],
   "rules": {}
 }
