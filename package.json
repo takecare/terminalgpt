@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "babel index.js src -d dist",
+    "build": "babel src -d dist",
     "dev": "babel src -d dist -w",
     "lint": "node_modules/.bin/eslint src/",
     "lint:fix": "node_modules/.bin/eslint src/ --fix",
@@ -20,13 +20,15 @@
     "commander": "^11.0.0",
     "dotenv": "^16.3.1",
     "gpt-3-encoder": "^1.1.4",
-    "ink": "^4.2.0",
+    "ink": "^4.3.0",
     "openai": "^3.3.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.6",
     "@babel/core": "^7.22.8",
+    "@babel/preset-env": "^7.22.9",
     "@babel/preset-react": "^7.22.5",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.8.0",
@@ -35,11 +37,19 @@
     "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-react": "^7.32.2",
-    "import-jsx": "^5.0.0",
     "prettier": "^3.0.0"
   },
   "babel": {
     "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "modules": false,
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
       "@babel/preset-react"
     ]
   }
