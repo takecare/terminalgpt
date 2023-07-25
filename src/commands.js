@@ -1,38 +1,29 @@
 import { UserMessage } from "./context.js";
-import { request } from "./gpt.js";
 
-const prompt = (context) =>
+const prompt = (context, callback) =>
   async function (options) {
-    console.log("prompt mode");
-    console.log("\topts:", options);
-    // TODO input for user to type their question
-    // TODO issue request
-    // TODO display response
+    callback(context);
   };
 
-const question = (context) =>
+const question = (context, callback) =>
   async function (question, options) {
-    console.log("question mode");
-    console.log("\tquestion:", question);
-    console.log("\topts:", options);
     // TODO deal with possibility of args being an array of str
-    // context.add(new UserMessage(args));
-    context.add(new UserMessage(question[0]));
-    const response = await request(context);
     // TODO how to deal with erroneous responses?
-    const message = response.data.choices[0].message;
-    const content = message.content;
-    console.log(content);
+
+    context.add(new UserMessage(question[0]));
+    callback(context);
+
+    // const response = await fakeRequest(context);
+    // const message = response.data.choices[0].message;
+    // const content = message.content;
+    // console.log(content);
   };
 
-const interactive = (context) =>
+const interactive = (context, callback) =>
   // TODO do we want to accept args here or just options? we could accept an
   // optional question to kickstart the interactive session
   async function (args, options) {
-    console.log("interactive mode");
-    console.log("\targs:", args);
-    console.log("\topts:", options);
-    // TODO
+    callback(context);
   };
 
 export { prompt, question, interactive };
