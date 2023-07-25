@@ -38,7 +38,7 @@ Question.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
 };
 
-const Answer = ({messages}) => {
+const Answer = ({ messages }) => {
   const [response, setResponse] = useState();
   useEffect(() => {
     const get = async () => {
@@ -50,13 +50,31 @@ const Answer = ({messages}) => {
   }, [messages]);
   return (
     <>
-      <Text>Response: {response || "..."}</Text>
+      <Text>Response: {response || <Loading />}</Text>
     </>
   );
 };
 
 Answer.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
-}
+};
+
+const Loading = () => {
+  const LENGTH = 6;
+  const [progress, setProgress] = useState(".");
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (progress.length <= LENGTH) {
+        setProgress(`${progress} .`);
+      } else {
+        setProgress(".");
+      }
+    }, 150);
+    return () => {
+      clearTimeout(id);
+    }
+  });
+  return <><Text>{progress}</Text></>;
+};
 
 export { App };
