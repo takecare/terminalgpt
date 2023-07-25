@@ -43,11 +43,13 @@ class AssistantMessage extends Message {
 class Context {
   #messages;
   model;
+  mode;
 
   constructor() {
     // TODO custom initial system/context message
     this.#messages = [new ContextMessage("You are a helpful assistant.")];
     this.model = DEFAULT_MODEL;
+    this.mode = "question";
   }
 
   add(message) {
@@ -55,8 +57,9 @@ class Context {
   }
 
   get messages() {
-    return this.#messages.map((m) => m.message);
+    return this.#messages;
+    // return this.#messages.map((m) => m.message);
   }
 }
 
-export { UserMessage, AssistantMessage, Context };
+export { Message, UserMessage, AssistantMessage, Context };
