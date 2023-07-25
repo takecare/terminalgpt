@@ -1,16 +1,15 @@
-#!/usr/bin/env NODE_NO_WARNINGS=1 node --loader=import-jsx
+//
+// #!/usr/bin/env NODE_NO_WARNINGS=1 node --loader=import-jsx
 // https://github.com/vadimdemedes/import-jsx ⤴
 
 import { Command } from "commander";
-
 import { DEFAULT_MODEL } from "./gpt.js";
-// import { countTokens } from "./tokenizer.js";
 import { Context } from "./context.js";
 import { question, prompt, interactive } from "./commands.js";
 
-// import React from "react";
-// import { render } from "ink";
-// import { Demo } from "./tui.js";
+import React from "react";
+import { render } from "ink";
+import { App } from "./tui.js";
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
@@ -20,6 +19,18 @@ if (!process.env.OPENAI_API_KEY) {
 const program = new Command();
 const context = new Context();
 
+const main = async (context) => {
+  let app; // eslint-disable-line prefer-const
+
+  const onDone = () => {
+    app.unmount();
+  };
+
+  app = render(<App context={context} onDone={onDone} />);
+
+  await app.waitUntilExit();
+};
+
 program
   .name("TerminalGPT")
   .description("CLI tool to interact with the OpenAI API.")
@@ -28,7 +39,7 @@ program
 program.option(
   "-m, --model <model>",
   "Define the model you're interacting with.",
-  DEFAULT_MODEL,
+  DEFAULT_MODEL
 );
 
 program
@@ -39,7 +50,7 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
-    const ask = question(context);
+    const ask = question(context, (context) => main(context));
     ask(q, program.opts());
   });
 
@@ -49,7 +60,7 @@ program
   .description("...")
   .action((_q, _options, _command) => {
     // we don't care about any question passed here, we'll provide an input
-    const p = prompt(context);
+    const p = prompt(context, (context) => main(context));
     p(program.opts());
   });
 
@@ -59,30 +70,26 @@ program
   .description("...")
   .argument("[question...]", "An optional question to kickstart the session.")
   .action((q, _options, _command) => {
-    //
-    const interact = interactive(context);
+    // we don't care about any question passed here, we'll provide an input
+    const interact = interactive(context, (context) => main(context));
     interact(q, program.opts());
   });
 
 program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
-    console.log("default");
+    console.log("running on default...");
     if (program.args.length === 0) {
-      const interact = interactive(context);
+      const interact = interactive(context, (context) => main(context));
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      const ask = question(context);
+      const ask = question(context, (context) => main(context));
       ask(program.args, program.opts());
     }
   });
 
 program.parse();
 
-// render(<Demo />);
-// console.log(countTokens(context));
-
-// messages.push(userMessage("can you tell me about s. joão festivities in porto?"));
 // request(messages)
 //     .then(response => {
 //       const status = response.status;
