@@ -78,7 +78,6 @@ program
 program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
-    console.log("running on default...");
     if (program.args.length === 0) {
       const interact = interactive(context, (context) => main(context));
       interact(program.args, program.opts());

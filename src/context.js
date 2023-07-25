@@ -58,7 +58,6 @@ class Context {
 
   get messages() {
     return this.#messages;
-    // return this.#messages.map((m) => m.message);
   }
 }
 

@@ -8,15 +8,14 @@ const App = ({ context, onDone }) => {
   const { exit } = useApp();
   const mode = context.mode;
   const model = context.model ? context.model : "";
-  const messages = Array.isArray(context.messages)
-    ? context.messages
-    : [];
+  const messages = Array.isArray(context.messages) ? context.messages : [];
 
   return (
     <Box margin={2} width="100%" height="100%" flexDirection="column">
       <Text>Mode: {mode}</Text>
       <Text>Model: {model}</Text>
       {mode === "question" ? <Question messages={messages} /> : <Text></Text>}
+      <Answer messages={messages} />
     </Box>
   );
 };
@@ -27,21 +26,10 @@ App.propTypes = {
 };
 
 const Question = ({ messages }) => {
-  const content = messages[0].content;
-  console.log("messages:", messages);
-  console.log("instance:", messages[0] instanceof Message);
-
-  useEffect(() => {
-    const get = async () => {
-      const response = await fakeRequest();
-      console.log(response);
-    };
-    get();
-  }, [messages]);
-
+  const questionContent = messages[0].content;
   return (
     <Box flexDirection="column">
-      <Text>Question: {content}</Text>
+      <Text>Question: {questionContent}</Text>
     </Box>
   );
 };
@@ -49,5 +37,26 @@ const Question = ({ messages }) => {
 Question.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
 };
+
+const Answer = ({messages}) => {
+  const [response, setResponse] = useState();
+  useEffect(() => {
+    const get = async () => {
+      const apiResponse = await fakeRequest();
+      const response = apiResponse.data.choices[0];
+      setResponse(response.message.content);
+    };
+    get();
+  }, [messages]);
+  return (
+    <>
+      <Text>Response: {response || "..."}</Text>
+    </>
+  );
+};
+
+Answer.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
+}
 
 export { App };
