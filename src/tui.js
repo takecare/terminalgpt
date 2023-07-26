@@ -4,8 +4,7 @@ import { useApp, Box, Text } from "ink";
 import { fakeRequest } from "./gpt.js";
 import { Context, Message } from "./context.js";
 
-const App = ({ context, onDone }) => {
-  const { exit } = useApp();
+const App = ({ context }) => {
   const mode = context.mode;
   const model = context.model ? context.model : "";
   const messages = Array.isArray(context.messages) ? context.messages : [];
@@ -22,7 +21,6 @@ const App = ({ context, onDone }) => {
 
 App.propTypes = {
   context: PropTypes.instanceOf(Context),
-  onDone: PropTypes.func.isRequired,
 };
 
 const Question = ({ messages }) => {
@@ -39,15 +37,20 @@ Question.propTypes = {
 };
 
 const Answer = ({ messages }) => {
+  // https://github.com/vadimdemedes/ink#useapp
+  const { exit } = useApp();
   const [response, setResponse] = useState();
+
   useEffect(() => {
     const get = async () => {
       const apiResponse = await fakeRequest();
       const response = apiResponse.data.choices[0];
       setResponse(response.message.content);
+      exit();
     };
     get();
   }, [messages]);
+
   return (
     <>
       <Text>Response: {response || <Loading />}</Text>
@@ -57,6 +60,7 @@ const Answer = ({ messages }) => {
 
 Answer.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
+  exit: PropTypes.func,
 };
 
 const Loading = () => {
