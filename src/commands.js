@@ -1,11 +1,12 @@
 import { UserMessage } from "./context.js";
 
-// commands now do very little as we shift the logic from them to components.
-// from this module we provide what are essentially command factories. each
-// factory requires the context object and a callback that is to be called once
-// any setup required for the specific command is done.
+// commands now do very little as we have shifted the logic from them to
+// react components. from this module, we provide what are essentially command
+// factories. each factory requires the context object and a callback that is to
+// be called once any setup required for the specific command is done.
 // for example, for the question command we add an initial message to provide
-// more context to the model
+// more context to the model before executing the callback (which should feed
+// the context to the App component)
 
 const prompt = (context, callback) =>
   async function (options) {

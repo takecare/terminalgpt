@@ -19,6 +19,9 @@ if (!process.env.OPENAI_API_KEY) {
 const program = new Command();
 const context = new Context();
 
+/** main() allows us to easily bridge Commander and ink together. as Commander
+ * is our entry point we have to wait for it to process the input from the
+ * shell - i.e. command args - before we render our app with ink. */
 const main = async (context) => {
   // https://github.com/vadimdemedes/ink#rendertree-options
   const app = render(<App context={context} />);
