@@ -22,9 +22,9 @@ const App = ({ context, mode, isDebug }) => {
       {isDebug && <Text>Mode: {mode}</Text>}
       {isDebug && <Text>Model: {model}</Text>}
       <Text>Token estimation: TODO</Text>
-      {mode === Mode.PROMPT ? <PromptMode context={context} /> : <></>}
-      {mode === Mode.QUESTION ? <QuestionMode context={context} /> : <></>}
-      {mode === Mode.INTERACTIVE ? <InteractiveMode context={context} /> : <></>}
+      {mode === Mode.PROMPT && <PromptMode context={context} />}
+      {mode === Mode.QUESTION && <QuestionMode context={context} />}
+      {mode === Mode.INTERACTIVE && <InteractiveMode context={context} />}
     </Box>
   );
 };
