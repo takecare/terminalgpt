@@ -9,9 +9,7 @@ import { question, prompt, interactive } from "./commands.js";
 
 import React from "react";
 import { render } from "ink";
-import { App } from "./tui.js";
-
-// TODO create mode enum
+import { App, Mode } from "./tui.js";
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
@@ -51,7 +49,7 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
-    const ask = question(context, (context) => main("question", context));
+    const ask = question(context, (context) => main(Mode.QUESTION, context));
     ask(q, program.opts());
   });
 
@@ -61,7 +59,7 @@ program
   .description("...")
   .action((_q, _options, _command) => {
     // we don't care about any question passed here, we'll provide an input
-    const p = prompt(context, (context) => main("prompt", context));
+    const p = prompt(context, (context) => main(Mode.PROMPT, context));
     p(program.opts());
   });
 
@@ -72,7 +70,7 @@ program
   .argument("[question...]", "An optional question to kickstart the session.")
   .action((q, _options, _command) => {
     // we don't care about any question passed here, we'll provide an input
-    const interact = interactive(context, (context) => main("interactive", context));
+    const interact = interactive(context, (context) => main(Mode.INTERACTIVE, context));
     interact(q, program.opts());
   });
 
@@ -80,10 +78,10 @@ program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
     if (program.args.length === 0) {
-      const interact = interactive(context, (context) => main("interactive", context));
+      const interact = interactive(context, (context) => main(Mode.INTERACTIVE, context));
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      const ask = question(context, (context) => main("question", context));
+      const ask = question(context, (context) => main(Mode.QUESTION, context));
       ask(program.args, program.opts());
     }
   });

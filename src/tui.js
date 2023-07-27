@@ -4,6 +4,16 @@ import { useApp, Box, Text } from "ink";
 import { fakeRequest } from "./gpt.js";
 import { Context, Message } from "./context.js";
 
+class Mode {
+  static #_PROMPT = "prompt";
+  static #_QUESTION = "question";
+  static #_INTERACTIVE = "interactive";
+
+  static get PROMPT() { return this.#_PROMPT; }
+  static get QUESTION() { return this.#_QUESTION; }
+  static get INTERACTIVE() { return this.#_INTERACTIVE; }
+}
+
 const App = ({ context, mode, isDebug }) => {
   const model = context.model ? context.model : "";
 
@@ -12,16 +22,16 @@ const App = ({ context, mode, isDebug }) => {
       {isDebug && <Text>Mode: {mode}</Text>}
       {isDebug && <Text>Model: {model}</Text>}
       <Text>Token estimation: TODO</Text>
-      {mode === "prompt" ? <PromptMode context={context} /> : <></>}
-      {mode === "question" ? <QuestionMode context={context} /> : <></>}
-      {mode === "interactive" ? <InteractiveMode context={context} /> : <></>}
+      {mode === Mode.PROMPT ? <PromptMode context={context} /> : <></>}
+      {mode === Mode.QUESTION ? <QuestionMode context={context} /> : <></>}
+      {mode === Mode.INTERACTIVE ? <InteractiveMode context={context} /> : <></>}
     </Box>
   );
 };
 
 App.propTypes = {
   context: PropTypes.instanceOf(Context).isRequired,
-  mode: PropTypes.oneOf(["question"]).isRequired,
+  mode: PropTypes.oneOf([Mode.PROMPT, Mode.QUESTION, Mode.INTERACTIVE]).isRequired,
   isDebug: PropTypes.bool,
 };
 
@@ -121,4 +131,4 @@ const Loading = () => {
   return <><Text>{progress}</Text></>;
 };
 
-export { App };
+export { App, Mode };
