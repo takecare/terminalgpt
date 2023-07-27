@@ -4,27 +4,63 @@ import { useApp, Box, Text } from "ink";
 import { fakeRequest } from "./gpt.js";
 import { Context, Message } from "./context.js";
 
-const App = ({ context }) => {
-  const mode = context.mode;
+const App = ({ context, mode, isDebug }) => {
   const model = context.model ? context.model : "";
-  const messages = Array.isArray(context.messages) ? context.messages : [];
 
   return (
-    <Box margin={2} width="100%" height="100%" flexDirection="column">
-      <Text>Mode: {mode}</Text>
-      <Text>Model: {model}</Text>
-      {mode === "question" ? <Question messages={messages} /> : <Text></Text>}
-      <Answer messages={messages} />
+    <Box margin={0} width="100%" height="100%" flexDirection="column">
+      {isDebug && <Text>Mode: {mode}</Text>}
+      {isDebug && <Text>Model: {model}</Text>}
+      <Text>Token estimation: TODO</Text>
+      {mode === "prompt" ? <PromptMode context={context} /> : <></>}
+      {mode === "question" ? <QuestionMode context={context} /> : <></>}
+      {mode === "interactive" ? <InteractiveMode context={context} /> : <></>}
     </Box>
   );
 };
 
 App.propTypes = {
-  context: PropTypes.instanceOf(Context),
+  context: PropTypes.instanceOf(Context).isRequired,
+  mode: PropTypes.oneOf(["question"]).isRequired,
+  isDebug: PropTypes.bool,
 };
+
+const PromptMode = ({context}) => {
+  //
+  return (<></>);
+}
+
+PromptMode.propTypes = {
+  context: PropTypes.instanceOf(Context),
+}
+
+const QuestionMode = ({context}) => {
+  const messages = Array.isArray(context.messages) ? context.messages : [];
+
+  return (
+    <>
+      <Question messages={messages} />
+      <Answer messages={messages} />
+    </>
+  )
+}
+
+QuestionMode.propTypes = {
+  context: PropTypes.instanceOf(Context),
+}
+
+const InteractiveMode = ({context}) => {
+  //
+  return (<></>);
+}
+
+InteractiveMode.propTypes = {
+  context: PropTypes.instanceOf(Context),
+}
 
 const Question = ({ messages }) => {
   const questionContent = messages[0].content;
+
   return (
     <Box flexDirection="column">
       <Text>Question: {questionContent}</Text>
@@ -64,20 +100,24 @@ Answer.propTypes = {
 };
 
 const Loading = () => {
-  const LENGTH = 6;
+  const PROGRESS_BAR_LENGTH = 4;
+  const REFRESH_INTERVAL_MILLIS = 200;
+
   const [progress, setProgress] = useState(".");
+
   useEffect(() => {
     const id = setTimeout(() => {
-      if (progress.length <= LENGTH) {
+      if (progress.length <= PROGRESS_BAR_LENGTH) {
         setProgress(`${progress} .`);
       } else {
         setProgress(".");
       }
-    }, 150);
+    }, REFRESH_INTERVAL_MILLIS);
     return () => {
       clearTimeout(id);
     }
   });
+
   return <><Text>{progress}</Text></>;
 };
 

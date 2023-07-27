@@ -11,10 +11,14 @@ import React from "react";
 import { render } from "ink";
 import { App } from "./tui.js";
 
+// TODO create mode enum
+
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
   process.exit(1);
 }
+
+const IS_DEBUG = !!process.env.DEBUG;
 
 const program = new Command();
 const context = new Context();
@@ -22,9 +26,9 @@ const context = new Context();
 /** main() allows us to easily bridge Commander and ink together. as Commander
  * is our entry point we have to wait for it to process the input from the
  * shell - i.e. command args - before we render our app with ink. */
-const main = async (context) => {
+const main = async (mode, context) => {
   // https://github.com/vadimdemedes/ink#rendertree-options
-  const app = render(<App context={context} />);
+  const app = render(<App context={context} mode={mode} isDebug={IS_DEBUG} />);
   await app.waitUntilExit();
 };
 
@@ -47,7 +51,7 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
-    const ask = question(context, (context) => main(context));
+    const ask = question(context, (context) => main("question", context));
     ask(q, program.opts());
   });
 
@@ -57,7 +61,7 @@ program
   .description("...")
   .action((_q, _options, _command) => {
     // we don't care about any question passed here, we'll provide an input
-    const p = prompt(context, (context) => main(context));
+    const p = prompt(context, (context) => main("prompt", context));
     p(program.opts());
   });
 
@@ -68,7 +72,7 @@ program
   .argument("[question...]", "An optional question to kickstart the session.")
   .action((q, _options, _command) => {
     // we don't care about any question passed here, we'll provide an input
-    const interact = interactive(context, (context) => main(context));
+    const interact = interactive(context, (context) => main("interactive", context));
     interact(q, program.opts());
   });
 
@@ -76,10 +80,10 @@ program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
     if (program.args.length === 0) {
-      const interact = interactive(context, (context) => main(context));
+      const interact = interactive(context, (context) => main("interactive", context));
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      const ask = question(context, (context) => main(context));
+      const ask = question(context, (context) => main("question", context));
       ask(program.args, program.opts());
     }
   });
