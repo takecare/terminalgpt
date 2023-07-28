@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useApp, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
-import { Context, Message } from "./context.js";
+import { Context, Message, UserMessage } from "./context.js";
 
 class Mode {
   static #_PROMPT = "PROMPT";
@@ -84,7 +84,7 @@ InteractiveMode.propTypes = {
 };
 
 const Question = ({ messages }) => {
-  const questionContent = messages.find(m => m.role === "user").content;
+  const questionContent = messages.find(m => m instanceof UserMessage).content;
 
   return (
     <Box flexDirection="column">
