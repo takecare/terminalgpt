@@ -16,8 +16,6 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
-const IS_DEBUG = !!process.env.DEBUG;
-
 const program = new Command();
 const context = new Context();
 
@@ -25,8 +23,10 @@ const context = new Context();
  * is our entry point we have to wait for it to process the input from the
  * shell - i.e. command args - before we render our app with ink. */
 const main = async (mode, context) => {
+  const isDebug = program.opts().debug || !!process.env.DEBUG;
+
   // https://github.com/vadimdemedes/ink#rendertree-options
-  const app = render(<App context={context} mode={mode} isDebug={IS_DEBUG} />);
+  const app = render(<App context={context} mode={mode} isDebug={isDebug} />);
   await app.waitUntilExit();
 };
 
@@ -41,6 +41,8 @@ program.option(
   DEFAULT_MODEL
 );
 
+program.option("-d, --debug", "Activate debug mode.");
+
 program
   .command("question")
   .alias("q")
@@ -49,6 +51,7 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
+    console.log(_options);
     const ask = question(context, (context) => main(Mode.QUESTION, context));
     ask(q, program.opts());
   });
@@ -56,9 +59,11 @@ program
 program
   .command("prompt")
   .alias("p")
-  .description("...")
+  .description(
+    "Pop up a prompt to formulate a single (one-shot) question to the model."
+  )
   .action((_q, _options, _command) => {
-    // we don't care about any question passed here, we'll provide an input
+    // we don't care about any question passed here as we'll provide an input
     const p = prompt(context, (context) => main(Mode.PROMPT, context));
     p(program.opts());
   });
@@ -66,22 +71,33 @@ program
 program
   .command("interactive")
   .alias("i")
-  .description("...")
+  .description(
+    "Enter the interactive mode where you can have a chat with the model."
+  )
   .argument("[question...]", "An optional question to kickstart the session.")
   .action((q, _options, _command) => {
-    // we don't care about any question passed here, we'll provide an input
-    const interact = interactive(context, (context) => main(Mode.INTERACTIVE, context));
+    // we don't care about any question passed here as we'll provide an input
+    const interact = interactive(context, (context) =>
+      main(Mode.INTERACTIVE, context)
+    );
     interact(q, program.opts());
   });
 
 program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
+    console.log(program.opts()); // debug, remove! @rui
+
+
     if (program.args.length === 0) {
-      const interact = interactive(context, (context) => main(Mode.INTERACTIVE, context));
+      const interact = interactive(context, (context) =>
+        main(Mode.INTERACTIVE, context)
+      );
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      const ask = question(context, (context) => main(Mode.QUESTION, context));
+      const ask = question(context, (context) =>
+        main(Mode.QUESTION, context)
+      );
       ask(program.args, program.opts());
     }
   });
