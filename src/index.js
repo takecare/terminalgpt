@@ -51,7 +51,8 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
-    console.log(_options);
+    console.log("question mode - options:", program.opts());
+
     const ask = question(context, (context) => main(Mode.QUESTION, context));
     ask(q, program.opts());
   });
@@ -86,8 +87,7 @@ program
 program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
-    console.log(program.opts()); // debug, remove! @rui
-
+    console.log("options:", program.opts()); // debug, remove! @rui
 
     if (program.args.length === 0) {
       const interact = interactive(context, (context) =>

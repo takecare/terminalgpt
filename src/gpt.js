@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from "openai";
-import "dotenv/config"; // load .env file into process.env
+import "dotenv/config"; // load .env file into process.env (to load api key)
 
 const DEFAULT_MODEL = "gpt-3.5-turbo";
 
