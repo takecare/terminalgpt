@@ -5,9 +5,9 @@ import { fakeRequest } from "./gpt.js";
 import { Context, Message } from "./context.js";
 
 class Mode {
-  static #_PROMPT = "prompt";
-  static #_QUESTION = "question";
-  static #_INTERACTIVE = "interactive";
+  static #_PROMPT = "PROMPT";
+  static #_QUESTION = "QUESTION";
+  static #_INTERACTIVE = "INTERACTIVE";
 
   static get PROMPT() { return this.#_PROMPT; }
   static get QUESTION() { return this.#_QUESTION; }
@@ -31,7 +31,7 @@ const App = ({ context, mode, isDebug }) => {
 
 App.propTypes = {
   context: PropTypes.instanceOf(Context).isRequired,
-  mode: PropTypes.oneOf([Mode.PROMPT, Mode.QUESTION, Mode.INTERACTIVE]).isRequired,
+  mode: PropTypes.oneOf(Object.entries(Object.getOwnPropertyDescriptors(Mode)).filter(e => e[1].get).map(e => e[0])).isRequired,
   isDebug: PropTypes.bool,
 };
 
@@ -86,6 +86,8 @@ const Answer = ({ messages }) => {
   // https://github.com/vadimdemedes/ink#useapp
   const { exit } = useApp();
   const [response, setResponse] = useState();
+
+  // TODO offer to copy answer?
 
   useEffect(() => {
     const get = async () => {
