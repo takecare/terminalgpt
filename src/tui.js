@@ -84,7 +84,7 @@ InteractiveMode.propTypes = {
 };
 
 const Question = ({ messages }) => {
-  const questionContent = messages[0].content;
+  const questionContent = messages.find(m => m.role === "user").content;
 
   return (
     <Box flexDirection="column">
@@ -107,8 +107,8 @@ const Answer = ({ model, messages }) => {
 
   useEffect(() => {
     const get = async () => {
-      // const apiResponse = await fakeRequest(model, messages);
-      const apiResponse = await request(model, messages);
+      const apiResponse = await fakeRequest(model, messages);
+      // const apiResponse = await request(model, messages);
       const response = apiResponse.data.choices[0];
       setResponse(response.message.content);
       exit();
