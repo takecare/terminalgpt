@@ -9,10 +9,26 @@ class Mode {
   static #_QUESTION = "QUESTION";
   static #_INTERACTIVE = "INTERACTIVE";
 
-  static get PROMPT() { return this.#_PROMPT; }
-  static get QUESTION() { return this.#_QUESTION; }
-  static get INTERACTIVE() { return this.#_INTERACTIVE; }
+  static get PROMPT() {
+    return this.#_PROMPT;
+  }
+
+  static get QUESTION() {
+    return this.#_QUESTION;
+  }
+
+  static get INTERACTIVE() {
+    return this.#_INTERACTIVE;
+  }
+
+  static values() {
+    return Object.entries(Object.getOwnPropertyDescriptors(Mode))
+      .filter((e) => e[1].get)
+      .map((e) => e[0]);
+  }
 }
+
+console.log(Mode.values);
 
 const App = ({ context, mode, isDebug }) => {
   const model = context.model ? context.model : "";
@@ -31,20 +47,20 @@ const App = ({ context, mode, isDebug }) => {
 
 App.propTypes = {
   context: PropTypes.instanceOf(Context).isRequired,
-  mode: PropTypes.oneOf(Object.entries(Object.getOwnPropertyDescriptors(Mode)).filter(e => e[1].get).map(e => e[0])).isRequired,
+  mode: PropTypes.oneOf(Mode.values()).isRequired,
   isDebug: PropTypes.bool,
 };
 
-const PromptMode = ({context}) => {
+const PromptMode = ({ context }) => {
   //
-  return (<></>);
-}
+  return <></>;
+};
 
 PromptMode.propTypes = {
   context: PropTypes.instanceOf(Context),
-}
+};
 
-const QuestionMode = ({context}) => {
+const QuestionMode = ({ context }) => {
   const messages = Array.isArray(context.messages) ? context.messages : [];
 
   return (
@@ -52,21 +68,21 @@ const QuestionMode = ({context}) => {
       <Question messages={messages} />
       <Answer messages={messages} />
     </>
-  )
-}
+  );
+};
 
 QuestionMode.propTypes = {
   context: PropTypes.instanceOf(Context),
-}
+};
 
-const InteractiveMode = ({context}) => {
+const InteractiveMode = ({ context }) => {
   //
-  return (<></>);
-}
+  return <></>;
+};
 
 InteractiveMode.propTypes = {
   context: PropTypes.instanceOf(Context),
-}
+};
 
 const Question = ({ messages }) => {
   const questionContent = messages[0].content;
@@ -127,10 +143,14 @@ const Loading = () => {
     }, REFRESH_INTERVAL_MILLIS);
     return () => {
       clearTimeout(id);
-    }
+    };
   });
 
-  return <><Text>{progress}</Text></>;
+  return (
+    <>
+      <Text>{progress}</Text>
+    </>
+  );
 };
 
 export { App, Mode };
