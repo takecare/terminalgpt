@@ -152,7 +152,7 @@ const Loading = () => {
   const [progress, setProgress] = useState(".");
 
   useEffect(() => {
-    const id = setTimeout(() => {
+    const id = setInterval(() => {
       if (progress.length <= PROGRESS_BAR_LENGTH) {
         setProgress(`${progress} .`);
       } else {
@@ -160,7 +160,7 @@ const Loading = () => {
       }
     }, REFRESH_INTERVAL_MILLIS);
     return () => {
-      clearTimeout(id);
+      clearInterval(id);
     };
   });
 
