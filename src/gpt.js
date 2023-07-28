@@ -8,14 +8,27 @@ export { DEFAULT_MODEL };
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// https://github.com/openai/openai-node
 const openai = new OpenAIApi(configuration);
 
-async function request(context) {
-  return await openai.createChatCompletion({
-    model: context.model,
-    messages: context.messages,
-    // temperature: 0.6,
-  });
+async function request(model, messages) {
+  const apiMessages = messages.map(m => m.message);
+  try {
+    return await openai.createChatCompletion({
+      model,
+      messages: apiMessages,
+      // temperature: 0.6,
+    });
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.data);
+    } else {
+      console.log(error.message);
+    }
+    throw Error("");
+  }
 }
 
 // leaving this here as a quick doc on what composes the openai response object
@@ -46,20 +59,26 @@ async function request(context) {
 //       // console.error(`${e.response.status}: ${e.response.data.error.message}`);
 //     });
 
-async function fakeRequest() {
+async function fakeRequest(model, messages, fails = false) {
+  const contents = messages
+    .map((m) => `'${m.message.role}:${m.message.content}'`)
+    .reduce((p, c) => `${p}, ${c}`);
   const response = {
     data: {
       choices: [
         {
           message: {
-            content: "this is the response... ",
+            content: `${model} response for "${contents}"`,
           },
         },
       ],
     },
   };
   const promise = new Promise((resolve, reject) => {
-    setTimeout(() => resolve(response), 1200);
+    setTimeout(
+      () => (fails ? reject(Error("boom!")) : resolve(response)),
+      1200
+    );
   });
   return promise;
 }
