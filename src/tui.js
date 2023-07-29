@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useApp, Box, Text } from "ink";
+import { useApp, useInput, useStdin, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
 import { Context, Message, UserMessage } from "./context.js";
 import { countTokens } from "./tokenizer.js";
@@ -64,12 +64,99 @@ TokenEstimation.propTypes = {
 };
 
 const PromptMode = ({ context }) => {
+  const [isInputting, setIsInputting] = useState(true);
+  const [input, setInput] = useState("");
+
+  const handleInput = (text) => {
+    setInput(text);
+    setIsInputting(false);
+  };
+
   //
-  return <></>;
+  return (
+    <>
+      {isInputting && <Input onInput={handleInput} />}
+      {!isInputting && <Text>{input}</Text>}
+    </>
+  );
 };
 
 PromptMode.propTypes = {
   context: PropTypes.instanceOf(Context),
+};
+
+const Input = ({ onInput }) => {
+  const [text, setText] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isActive, setIsActive] = useState(true);
+  // idx -> [0, text.length[
+  // render 3 separate <Text> components
+  // 1: [0, idx[
+  // 2: idx
+  // 3: [idx + 1, length[
+
+  useInput(
+    (input, key) => {
+      // TODO deal with shift+enter to add new line
+
+      if (key.return) {
+        onInput(text);
+      } else if (key.backspace) {
+        // TODO
+      } else if (key.delete) {
+        if (selectedIndex < 1) {
+          return;
+        }
+
+        setText(
+          text.substring(0, selectedIndex - 1) +
+            text.substring(selectedIndex, text.length)
+        );
+        setSelectedIndex(selectedIndex > 0 ? selectedIndex - 1 : 0);
+      } else if (key.escape) {
+        setIsActive(false);
+      } else if (key.leftArrow && text) {
+        setSelectedIndex(selectedIndex > 0 ? selectedIndex - 1 : 0);
+      } else if (key.rightArrow) {
+        setSelectedIndex(
+          selectedIndex >= text.length - 1 ? text.length - 1 : selectedIndex + 1
+        );
+      } else if (key.upArrow) {
+        //
+      } else if (key.downArrow) {
+        //
+      } else {
+        const newText = `${text}${input}`;
+        setText(newText);
+        setSelectedIndex(newText.length - 1);
+      }
+    },
+    { isActive }
+  );
+
+  const firstPart = text.substring(0, selectedIndex);
+  const selected = text.substring(selectedIndex, selectedIndex + 1);
+  const secondPart = text.substring(selectedIndex + 1, text.length);
+
+  return (
+    <>
+      <Text>
+        {selectedIndex} {text}
+      </Text>
+      <Text>firstPart: &quot;{firstPart}&quot;</Text>
+      <Text>selected: &quot;{selected}&quot;</Text>
+      <Text>secondPart: &quot;{secondPart}&quot;</Text>
+      <Box>
+        <Text>{firstPart}</Text>
+        <Text underline>{selected}</Text>
+        <Text>{secondPart}</Text>
+      </Box>
+    </>
+  );
+};
+
+Input.propTypes = {
+  onInput: PropTypes.func.isRequired,
 };
 
 const QuestionMode = ({ context }) => {
