@@ -89,15 +89,11 @@ const Input = ({ onInput }) => {
   const [text, setText] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isActive, setIsActive] = useState(true);
-  // idx -> [0, text.length[
-  // render 3 separate <Text> components
-  // 1: [0, idx[
-  // 2: idx
-  // 3: [idx + 1, length[
 
   useInput(
     (input, key) => {
       // TODO deal with shift+enter to add new line
+      // TODO we need to let selectedIndex go 1 above text length
 
       if (key.return) {
         onInput(text);
@@ -107,7 +103,6 @@ const Input = ({ onInput }) => {
         if (selectedIndex < 1) {
           return;
         }
-
         setText(
           text.substring(0, selectedIndex - 1) +
             text.substring(selectedIndex, text.length)
@@ -126,9 +121,11 @@ const Input = ({ onInput }) => {
       } else if (key.downArrow) {
         //
       } else {
-        const newText = `${text}${input}`;
+        const firstPart = text.substring(0, selectedIndex + 1);
+        const secondPart = text.substring(selectedIndex + 1, text.length);
+        const newText = `${firstPart}${input}${secondPart}`;
         setText(newText);
-        setSelectedIndex(newText.length - 1);
+        setSelectedIndex(selectedIndex + 1);
       }
     },
     { isActive }
@@ -140,12 +137,14 @@ const Input = ({ onInput }) => {
 
   return (
     <>
-      <Text>
-        {selectedIndex} {text}
-      </Text>
-      <Text>firstPart: &quot;{firstPart}&quot;</Text>
-      <Text>selected: &quot;{selected}&quot;</Text>
-      <Text>secondPart: &quot;{secondPart}&quot;</Text>
+      <>
+        <Text>
+          {selectedIndex} {text}
+        </Text>
+        <Text>firstPart: &quot;{firstPart}&quot;</Text>
+        <Text>selected: &quot;{selected}&quot;</Text>
+        <Text>secondPart: &quot;{secondPart}&quot;</Text>
+      </>
       <Box>
         <Text>{firstPart}</Text>
         <Text underline>{selected}</Text>
