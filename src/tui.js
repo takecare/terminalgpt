@@ -4,6 +4,7 @@ import { useApp, useInput, useStdin, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
 import { Context, Message, UserMessage } from "./context.js";
 import { countTokens } from "./tokenizer.js";
+import TextInput, { UncontrolledTextInput } from "ink-text-input";
 
 class Mode {
   static #_PROMPT = "PROMPT";
@@ -75,7 +76,15 @@ const PromptMode = ({ context }) => {
   //
   return (
     <>
-      {isInputting && <Input onInput={handleInput} />}
+      {/* {isInputting && <Input onInput={handleInput} />} */}
+      {/* <UncontrolledTextInput onSubmit={() => {}} /> */}
+      {/* {isInputting && (
+        <TextInput
+          value={input}
+          onChange={setInput}
+          onSubmit={() => setIsInputting(false)}
+        />
+      )} */}
       {!isInputting && <Text>{input}</Text>}
     </>
   );
@@ -95,8 +104,14 @@ const Input = ({ onInput }) => {
       // TODO deal with shift+enter to add new line
       // TODO we need to let selectedIndex go 1 above text length
 
+      if (input === "n" && key.ctrl) {
+        setText(`${text}\n`);
+        return;
+      }
+
       if (key.return) {
-        onInput(text);
+        setText(":" + input);
+        // onInput(text);
       } else if (key.backspace) {
         // TODO
       } else if (key.delete) {
@@ -255,6 +270,11 @@ const Loading = () => {
       <Text>{progress}</Text>
     </>
   );
+};
+
+const spinner = {
+  interval: 80,
+  frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
 };
 
 export { App, Mode };
