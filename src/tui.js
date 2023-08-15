@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useApp, useInput, useStdin, Box, Text } from "ink";
+import { useApp, useInput, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
 import { Context, Message, UserMessage } from "./context.js";
 import { countTokens } from "./tokenizer.js";
-import TextInput, { UncontrolledTextInput } from "ink-text-input";
+import TextInput from "ink-text-input";
 
 class Mode {
   static #_PROMPT = "PROMPT";
@@ -76,13 +76,12 @@ const PromptMode = ({ context }) => {
   //
   return (
     <>
-      {/* {isInputting && <Input onInput={handleInput} />} */}
-      {/* <UncontrolledTextInput onSubmit={() => {}} /> */}
+      {isInputting && <Input onInput={handleInput} />}
       {/* {isInputting && (
         <TextInput
           value={input}
           onChange={setInput}
-          onSubmit={() => setIsInputting(false)}
+          // onSubmit={() => setIsInputting(false)}
         />
       )} */}
       {!isInputting && <Text>{input}</Text>}
@@ -96,22 +95,23 @@ PromptMode.propTypes = {
 
 const Input = ({ onInput }) => {
   const [text, setText] = useState("");
+  const [input, setInput] = useState({
+    lines: [""],
+    cursorAt: { line: 0, column: 0 },
+  });
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isActive, setIsActive] = useState(true);
 
   useInput(
     (input, key) => {
-      // TODO deal with shift+enter to add new line
       // TODO we need to let selectedIndex go 1 above text length
 
-      if (input === "n" && key.ctrl) {
+      if (key.escape) {
+        setIsActive(false);
+      } else if (key.return) {
+        // TODO count number of returns
         setText(`${text}\n`);
-        return;
-      }
-
-      if (key.return) {
-        setText(":" + input);
-        // onInput(text);
       } else if (key.backspace) {
         // TODO
       } else if (key.delete) {
@@ -139,7 +139,8 @@ const Input = ({ onInput }) => {
         const firstPart = text.substring(0, selectedIndex + 1);
         const secondPart = text.substring(selectedIndex + 1, text.length);
         const newText = `${firstPart}${input}${secondPart}`;
-        setText(newText);
+        // setText(newText);
+        setText(`${text}${input}`);
         setSelectedIndex(selectedIndex + 1);
       }
     },
@@ -151,21 +152,22 @@ const Input = ({ onInput }) => {
   const secondPart = text.substring(selectedIndex + 1, text.length);
 
   return (
-    <>
-      <>
-        <Text>
+    <Box flexDirection="column">
+      <Box flexDirection="column">
+        {/* <Text>
           {selectedIndex} {text}
-        </Text>
-        <Text>firstPart: &quot;{firstPart}&quot;</Text>
+        </Text> */}
+        {/* <Text>firstPart: &quot;{firstPart}&quot;</Text>
         <Text>selected: &quot;{selected}&quot;</Text>
-        <Text>secondPart: &quot;{secondPart}&quot;</Text>
-      </>
-      <Box>
-        <Text>{firstPart}</Text>
-        <Text underline>{selected}</Text>
-        <Text>{secondPart}</Text>
+        <Text>secondPart: &quot;{secondPart}&quot;</Text> */}
       </Box>
-    </>
+      <Box flexDirection="column">
+        {/* <Text>{firstPart}</Text>
+        <Text underline>{selected}</Text>
+        <Text>{secondPart}</Text> */}
+        <Text>{text}</Text>
+      </Box>
+    </Box>
   );
 };
 
