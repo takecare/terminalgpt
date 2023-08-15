@@ -4,7 +4,6 @@ import { useApp, useInput, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
 import { Context, Message, UserMessage } from "./context.js";
 import { countTokens } from "./tokenizer.js";
-import TextInput from "ink-text-input";
 
 class Mode {
   static #_PROMPT = "PROMPT";
@@ -94,7 +93,10 @@ PromptMode.propTypes = {
 };
 
 const Input = ({ onInput }) => {
+  const ENTER_MAX = 3;
+
   const [text, setText] = useState("");
+  const [enterCount, setEnterCount] = useState(0);
   const [input, setInput] = useState({
     lines: [""],
     cursorAt: { line: 0, column: 0 },
@@ -107,10 +109,21 @@ const Input = ({ onInput }) => {
     (input, key) => {
       // TODO we need to let selectedIndex go 1 above text length
 
+      if (!key.return) {
+        setEnterCount(0);
+      } else {
+        setEnterCount(enterCount + 1);
+      }
+
+      if (enterCount === ENTER_MAX - 1) {
+        // -1 as we state not yet updated
+        onInput(text);
+        return;
+      }
+
       if (key.escape) {
         setIsActive(false);
       } else if (key.return) {
-        // TODO count number of returns
         setText(`${text}\n`);
       } else if (key.backspace) {
         // TODO
