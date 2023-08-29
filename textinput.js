@@ -33,7 +33,6 @@ const addInput = (newText) => {
     newCol = 0;
     newLine = currentLine + 1;
   } else {
-    // newCol = currentCol + newText.length - 1;
     // we're adding the full length of newText because when you're typing
     // something, usually the cursor is past the last character
     newCol = currentCol + newText.length;
@@ -47,38 +46,56 @@ const addInput = (newText) => {
 };
 
 const backspace = () => {
-  //
+  const newInput = { ...input };
+  const currentLine = input.cursorAt.line;
+  const currentCol = input.cursorAt.column;
+
+  if (currentLine > 0 && currentCol === 0) {
+    // current position is at the start of a line...
+    // 1. get contents of current line
+    // 2. place them on previous line
+    const currentLineContents = input.lines[currentLine];
+  } else if (currentCol > 0) {
+    // current position is somewhere else, just delete the character
+    //
+  }
+
+  // cannot delete
 };
 
-const cursorToLeft = (times = 1) => {
-  const toLeft = () => {
-    const currPos = input.cursorAt;
-    const newPos = input.cursorAt;
-    if (currPos.column > 0) {
-      newPos.column -= 1;
-    } else if (currPos.column == 0 && currPos.line > 0) {
-      newPos.line -= 1;
-      newPos.column = input.lines[newPos.line].length;
-    }
-    input.cursorAt = newPos;
-  };
+const cursorToLeft = () => {
+  const currPos = input.cursorAt;
+  const newPos = input.cursorAt;
 
-  for (let i = 0; i < times; i++) toLeft();
+  if (currPos.column > 0) {
+    // we can go left because we're not at the very start of a line
+    newPos.column -= 1;
+  } else if (currPos.column === 0 && currPos.line > 0) {
+    // we're at the start of a line, can we go to a previous line? if so, go
+    newPos.line -= 1;
+    newPos.column = input.lines[newPos.line].length;
+  }
+
+  input.cursorAt = newPos;
 };
 
 const cursorToRight = () => {
   const currPos = input.cursorAt;
   const newPos = input.cursorAt;
   const currLineLength = input.lines[currPos.line].length - 1;
+
   if (currPos.column < currLineLength) {
+    // we can go right because we're not at the end of the line
     newPos.column += 1;
   } else if (
-    currPos.column == currLineLength &&
+    currPos.column === currLineLength &&
     currPos.line < input.lines.length
   ) {
+    // we're at the end of a line, is there a next one we can go to? if so, go
     newPos.column = 0;
     newPos.line += 1;
   }
+
   input.cursorAt = newPos;
 };
 
@@ -96,25 +113,32 @@ const printHistory = (history) => {
   }
 };
 
+const YELLOW = "\x1b[33m";
+const BOLD = "\x1b[1m";
+const UNDERLINE = "\x1b[4m";
+const RESET = "\x1b[0m";
+
 const render = (input) => {
-  // highlight cursor
+  const contents = copy(input);
+
   for (let i = 0; i < input.lines.length; i++) {
     for (let j = 0; j < input.lines[i].length; j++) {
-      if (input.cursorAt.line == i && input.cursorAt.column == j) {
-        input.lines[i] =
+      if (input.cursorAt.line === i && input.cursorAt.column === j) {
+        contents.lines[i] =
           input.lines[i].substring(0, j) +
-          "\x1b[33m" +
+          YELLOW +
           input.lines[i][j] +
-          "\x1b[0m" +
+          RESET +
           input.lines[i].substring(j + 1, input.lines[i].length);
       }
     }
   }
 
-  for (const line of input.lines) {
+  for (const line of contents.lines) {
     console.log(line);
   }
-  console.log();
+
+  console.log(); // new line
 };
 
 const printCursorPos = (input) => {
@@ -131,12 +155,32 @@ addInput("\n");
 addInput("adeus");
 
 // render(history[history.length - 1]);
-
 // printHistory(history);
 
-printCursorPos(input);
-cursorToLeft(5);
-cursorToRight(1);
-// printCursorPos(input);
-
 render(input);
+
+process.stdin.setRawMode(true);
+process.stdin.resume();
+process.stdin.setEncoding("utf8");
+
+process.stdin.on("data", function (key) {
+  if (key === "\u001B\u005B\u0041") {
+    // up
+  }
+  if (key === "\u001B\u005B\u0042") {
+    // down
+  }
+  if (key === "\u001B\u005B\u0043") {
+    cursorToRight(1);
+    render(input);
+  }
+  if (key === "\u001B\u005B\u0044") {
+    cursorToLeft(1);
+    render(input);
+  }
+
+  if (key === "\u0003") {
+    process.stdout.write("bye");
+    process.exit();
+  } // ctrl-c
+});
