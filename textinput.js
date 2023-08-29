@@ -99,9 +99,6 @@ const cursorToRight = () => {
   input.cursorAt = newPos;
 };
 
-const highlightedChar = () =>
-  input.lines[input.cursorAt.line][input.cursorAt.column];
-
 const printHistory = (history) => {
   for (let i = 0; i < history.length; i++) {
     const lines = history[i].lines.reduce((acc, v) => `${acc}, ${v}`);
@@ -120,19 +117,16 @@ const RESET = "\x1b[0m";
 
 const render = (input) => {
   const contents = copy(input);
+  const line = contents.cursorAt.line;
+  const column = contents.cursorAt.column;
 
-  for (let i = 0; i < input.lines.length; i++) {
-    for (let j = 0; j < input.lines[i].length; j++) {
-      if (input.cursorAt.line === i && input.cursorAt.column === j) {
-        contents.lines[i] =
-          input.lines[i].substring(0, j) +
-          YELLOW +
-          input.lines[i][j] +
-          RESET +
-          input.lines[i].substring(j + 1, input.lines[i].length);
-      }
-    }
-  }
+  contents.lines[line] = contents.lines[line][column]
+    ? contents.lines[line].substring(0, column) +
+      YELLOW +
+      contents.lines[line][column] +
+      RESET +
+      contents.lines[line].substring(column + 1, contents.lines[line].length)
+    : contents.lines[line];
 
   for (const line of contents.lines) {
     console.log(line);
@@ -140,6 +134,9 @@ const render = (input) => {
 
   console.log(); // new line
 };
+
+const highlightedChar = () =>
+  input.lines[input.cursorAt.line][input.cursorAt.column];
 
 const printCursorPos = (input) => {
   console.log(
