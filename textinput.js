@@ -46,7 +46,7 @@ const addInput = (newText) => {
 };
 
 const backspace = () => {
-  const newInput = { ...input };
+  const newInput = copy(input);
   const currentLine = input.cursorAt.line;
   const currentCol = input.cursorAt.column;
 
@@ -120,13 +120,27 @@ const render = (input) => {
   const line = contents.cursorAt.line;
   const column = contents.cursorAt.column;
 
-  contents.lines[line] = contents.lines[line][column]
-    ? contents.lines[line].substring(0, column) +
+  const char = contents.lines[line][column];
+  if (char === " ") {
+    contents.lines[line] =
+      contents.lines[line].substring(0, column) +
       YELLOW +
-      contents.lines[line][column] +
+      "_" +
       RESET +
-      contents.lines[line].substring(column + 1, contents.lines[line].length)
-    : contents.lines[line];
+      contents.lines[line].substring(column + 1, contents.lines[line].length);
+  } else {
+    contents.lines[line] = contents.lines[line][column]
+      ? contents.lines[line].substring(0, column) +
+        YELLOW +
+        contents.lines[line][column] +
+        RESET +
+        contents.lines[line].substring(column + 1, contents.lines[line].length)
+      : contents.lines[line].substring(0, column) +
+        YELLOW +
+        "⏎" +
+        RESET +
+        contents.lines[line].substring(column + 1, contents.lines[line].length);
+  }
 
   for (const line of contents.lines) {
     console.log(line);
@@ -149,7 +163,7 @@ const printCursorPos = (input) => {
 addInput("ola");
 addInput("\n");
 addInput("\n");
-addInput("adeus");
+addInput("e adeus");
 
 // render(history[history.length - 1]);
 // printHistory(history);
