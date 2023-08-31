@@ -28,12 +28,16 @@ const addInput = (newText) => {
 
   let newLine, newCol;
   if (newText === "\n") {
+    // TODO: this is not correct. what if we add a new line in the middle of a line?
     newInput.lines.push("");
     newCol = 0;
     newLine = currentLine + 1;
   } else {
     // we're adding the full length of newText because when you're typing
     // something, usually the cursor is past the last character
+
+    // TODO: this is not correct. it does not support adding text in the middle of a line
+
     newCol = currentCol + newText.length;
     newLine = currentLine;
     newInput.lines[newLine] = newInput.lines[newLine] + newText;
@@ -184,7 +188,7 @@ process.stdin.resume();
 
 process.stdin.on("data", function (key) {
   // https://en.wikipedia.org/wiki/ANSI_escape_code#Terminal_input_sequences
-  // console.log(toUnicode(key));
+  console.log(toUnicode(key));
 
   if (key === "\u0003") {
     // ctrl-c
