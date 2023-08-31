@@ -28,7 +28,6 @@ const addInput = (newText) => {
 
   let newLine, newCol;
   if (newText === "\n") {
-    // newInput.lines[currentLine] = newInput.lines[currentLine] + "⏎"; // debug
     newInput.lines.push("");
     newCol = 0;
     newLine = currentLine + 1;
@@ -82,18 +81,25 @@ const cursorToLeft = () => {
 const cursorToRight = () => {
   const currPos = input.cursorAt;
   const newPos = input.cursorAt;
-  const currLineLength = input.lines[currPos.line].length - 1;
+  const currLine = input.lines[currPos.line];
+  // const currLineLength = currLine.length > 0 ? currLine.length - 1 : 0;
+  const currLineLength = currLine.length - 1;
 
   if (currPos.column < currLineLength) {
     // we can go right because we're not at the end of the line
     newPos.column += 1;
+  } else if (currPos.column === currLineLength) {
+    // we're at the end of a line, go to end of line (which is not a char)
+    newPos.column += 1;
   } else if (
-    currPos.column === currLineLength &&
-    currPos.line < input.lines.length
+    currPos.column > currLineLength &&
+    currPos.line < input.lines.length - 1
   ) {
-    // we're at the end of a line, is there a next one we can go to? if so, go
+    // we're past the end of the line, go to next line if possible
     newPos.column = 0;
     newPos.line += 1;
+  } else {
+    // do nothing
   }
 
   input.cursorAt = newPos;
@@ -164,6 +170,8 @@ addInput("ola");
 addInput("\n");
 addInput("\n");
 addInput("e adeus");
+addInput("\n");
+addInput("xau");
 
 // render(history[history.length - 1]);
 // printHistory(history);
@@ -171,27 +179,46 @@ addInput("e adeus");
 render(input);
 
 process.stdin.setRawMode(true);
-process.stdin.resume();
 process.stdin.setEncoding("utf8");
+process.stdin.resume();
 
 process.stdin.on("data", function (key) {
-  if (key === "\u001B\u005B\u0041") {
-    // up
-  }
-  if (key === "\u001B\u005B\u0042") {
-    // down
-  }
-  if (key === "\u001B\u005B\u0043") {
-    cursorToRight(1);
-    render(input);
-  }
-  if (key === "\u001B\u005B\u0044") {
-    cursorToLeft(1);
-    render(input);
-  }
+  // https://en.wikipedia.org/wiki/ANSI_escape_code#Terminal_input_sequences
+  // console.log(toUnicode(key));
 
   if (key === "\u0003") {
+    // ctrl-c
     process.stdout.write("bye");
     process.exit();
-  } // ctrl-c
+  }
+
+  if (key === "\u001B\u005B\u0041") {
+    // up
+  } else if (key === "\u001B\u005B\u0042") {
+    // down
+  } else if (key === "\u001B\u005B\u0043") {
+    cursorToRight(1);
+  } else if (key === "\u001B\u005B\u0044") {
+    cursorToLeft(1);
+  } else if (key === "\u000D") {
+    addInput("\n");
+  } else {
+    addInput(key);
+  }
+
+  // console.clear();
+  render(input);
 });
+
+const toUnicode = (str) => {
+  let unicode = "";
+  for (let i = 0; i < str.length; i++) {
+    let theUnicode = str.charCodeAt(i).toString(16).toUpperCase();
+    while (theUnicode.length < 4) {
+      theUnicode = "0" + theUnicode;
+    }
+    theUnicode = "\\u" + theUnicode;
+    unicode += theUnicode;
+  }
+  return unicode;
+};
