@@ -1,11 +1,19 @@
 const input = {
-  text: [""],
+  text: "",
   cursor: 0,
 };
 
 const addInput = (newText) => {
-  input.text += newText;
-  input.cursor += newText.length;
+  // input.text += newText;
+  // input.cursor += newText.length;
+
+  const first = input.text.slice(0, input.cursor);
+  const second = input.text.slice(input.cursor + 1, input.text.length);
+  const middle =
+    newText + (input.text[input.cursor] ? input.text[input.cursor] : "");
+
+  input.text = first + middle + second;
+  input.cursor = input.cursor + newText.length;
 };
 
 const backspace = () => {
@@ -27,7 +35,7 @@ const cursorToRight = () => {
   }
 };
 
-const YELLOW = "\x1b[33m";
+const HIGHLIGHT = "\x1b[4m";
 const RESET = "\x1b[0m";
 
 const render = () => {
@@ -41,9 +49,9 @@ const render = () => {
     middle = "⏎\n";
   }
 
-  // console.log(`middle='${middle}'`);
   console.clear();
-  console.log(first + YELLOW + middle + RESET + second);
+  console.log(`cursor=${input.cursor}\n`);
+  console.log(first + HIGHLIGHT + middle + RESET + second);
   console.log();
 };
 
