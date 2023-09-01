@@ -17,9 +17,12 @@ const addInput = (newText) => {
 };
 
 const backspace = () => {
+  // TODO handle going over the left limit (pos<0)
+  // TODO handle "fake" new line characters
+
   input.text =
     input.text.slice(0, input.cursor - 1) +
-    input.text.slice(input.cursor + 1, input.text.length);
+    input.text.slice(input.cursor, input.text.length);
   input.cursor = input.cursor - 1;
 };
 
