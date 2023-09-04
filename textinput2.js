@@ -4,9 +4,6 @@ const input = {
 };
 
 const addInput = (newText) => {
-  // input.text += newText;
-  // input.cursor += newText.length;
-
   const first = input.text.slice(0, input.cursor);
   const second = input.text.slice(input.cursor + 1, input.text.length);
   const middle =
