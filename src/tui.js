@@ -76,13 +76,6 @@ const PromptMode = ({ context }) => {
   return (
     <>
       {isInputting && <Input onInput={handleInput} />}
-      {/* {isInputting && (
-        <TextInput
-          value={input}
-          onChange={setInput}
-          // onSubmit={() => setIsInputting(false)}
-        />
-      )} */}
       {!isInputting && <Text>{input}</Text>}
     </>
   );
@@ -93,30 +86,53 @@ PromptMode.propTypes = {
 };
 
 const Input = ({ onInput }) => {
-  const ENTER_MAX = 3;
+  const [isActive, setIsActive] = useState(true);
 
   const [text, setText] = useState("");
-  const [enterCount, setEnterCount] = useState(0);
-  const [input, setInput] = useState({
-    lines: [""],
-    cursorAt: { line: 0, column: 0 },
-  });
+  const [cursor, setCursor] = useState(0);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isActive, setIsActive] = useState(true);
+  const ENTER_MAX = 3;
+  const [enterCount, setEnterCount] = useState(0);
+
+  const addInput = (newText) => {
+    const first = text.slice(0, cursor);
+    const second = text.slice(cursor + 1, text.length);
+    const middle = newText + (text[cursor] ? text[cursor] : "");
+
+    setText(first + middle + second);
+    setCursor(cursor + newText.length);
+  };
+
+  const backspace = () => {
+    if (cursor === 0) {
+      return;
+    }
+
+    setText(text.slice(0, cursor - 1) + text.slice(cursor, text.length));
+    setCursor(cursor - 1);
+  };
+
+  const cursorToLeft = () => {
+    if (cursor > 0) {
+      setCursor(cursor - 1);
+    }
+  };
+
+  const cursorToRight = () => {
+    if (cursor < text.length) {
+      setCursor(cursor + 1);
+    }
+  };
 
   useInput(
     (input, key) => {
-      // TODO we need to let selectedIndex go 1 above text length
-
       if (!key.return) {
         setEnterCount(0);
       } else {
         setEnterCount(enterCount + 1);
       }
 
-      if (enterCount === ENTER_MAX - 1) {
-        // -1 as we state not yet updated
+      if (enterCount === ENTER_MAX) {
         onInput(text);
         return;
       }
@@ -124,60 +140,29 @@ const Input = ({ onInput }) => {
       if (key.escape) {
         setIsActive(false);
       } else if (key.return) {
-        setText(`${text}\n`);
+        addInput("\n");
       } else if (key.backspace) {
-        // TODO
+        backspace();
       } else if (key.delete) {
-        if (selectedIndex < 1) {
-          return;
-        }
-        setText(
-          text.substring(0, selectedIndex - 1) +
-            text.substring(selectedIndex, text.length)
-        );
-        setSelectedIndex(selectedIndex > 0 ? selectedIndex - 1 : 0);
-      } else if (key.escape) {
-        setIsActive(false);
+        backspace();
       } else if (key.leftArrow && text) {
-        setSelectedIndex(selectedIndex > 0 ? selectedIndex - 1 : 0);
+        cursorToLeft();
       } else if (key.rightArrow) {
-        setSelectedIndex(
-          selectedIndex >= text.length - 1 ? text.length - 1 : selectedIndex + 1
-        );
+        cursorToRight();
       } else if (key.upArrow) {
         //
       } else if (key.downArrow) {
         //
       } else {
-        const firstPart = text.substring(0, selectedIndex + 1);
-        const secondPart = text.substring(selectedIndex + 1, text.length);
-        const newText = `${firstPart}${input}${secondPart}`;
-        // setText(newText);
-        setText(`${text}${input}`);
-        setSelectedIndex(selectedIndex + 1);
+        addInput(input);
       }
     },
     { isActive }
   );
 
-  const firstPart = text.substring(0, selectedIndex);
-  const selected = text.substring(selectedIndex, selectedIndex + 1);
-  const secondPart = text.substring(selectedIndex + 1, text.length);
-
   return (
     <Box flexDirection="column">
       <Box flexDirection="column">
-        {/* <Text>
-          {selectedIndex} {text}
-        </Text> */}
-        {/* <Text>firstPart: &quot;{firstPart}&quot;</Text>
-        <Text>selected: &quot;{selected}&quot;</Text>
-        <Text>secondPart: &quot;{secondPart}&quot;</Text> */}
-      </Box>
-      <Box flexDirection="column">
-        {/* <Text>{firstPart}</Text>
-        <Text underline>{selected}</Text>
-        <Text>{secondPart}</Text> */}
         <Text>{text}</Text>
       </Box>
     </Box>
