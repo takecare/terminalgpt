@@ -1,4 +1,4 @@
-import { UserMessage } from "./context.js";
+import { UserMessage } from "./gptcontext.js";
 
 // commands now do very little as we have shifted the logic from them to
 // react components. from this module, we provide what are essentially command

@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { useApp, useInput, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
-import { Context, Message, UserMessage } from "./context.js";
+import { GptContext, Message, UserMessage } from "./gptcontext.js";
 import { countTokens } from "./tokenizer.js";
 
 // we're using this listener to capture CTRL + ENTER events. it requires a11y
 // services access on macos. an alternative would be iohook but i couldn't get
 // that to work. planning on coming back to it later on.
 import { GlobalKeyboardListener } from "node-global-key-listener";
+import { useGptContext } from "./context.js";
 const keyListener = new GlobalKeyboardListener();
 
 class Mode {
@@ -35,7 +36,8 @@ class Mode {
   }
 }
 
-const App = ({ context, mode, isDebug }) => {
+const App = ({ mode, isDebug }) => {
+  const context = useGptContext();
   const model = context.model ? context.model : "";
 
   return (
@@ -51,7 +53,7 @@ const App = ({ context, mode, isDebug }) => {
 };
 
 App.propTypes = {
-  context: PropTypes.instanceOf(Context).isRequired,
+  // context: PropTypes.instanceOf(GptContext).isRequired,
   mode: PropTypes.oneOf(Mode.values()).isRequired,
   isDebug: PropTypes.bool,
 };
@@ -67,10 +69,15 @@ const TokenEstimation = ({ context }) => {
 };
 
 TokenEstimation.propTypes = {
-  context: PropTypes.instanceOf(Context).isRequired,
+  context: PropTypes.instanceOf(GptContext).isRequired,
 };
 
 const PromptMode = ({ context }) => {
+  const model = context.model;
+  const messages = Array.isArray(context.messages) ? context.messages : [];
+
+  // const [messages, setMessages] = useState(contextMessages);
+
   const [isInputting, setIsInputting] = useState(true);
   const [input, setInput] = useState("");
 
@@ -79,17 +86,22 @@ const PromptMode = ({ context }) => {
     setIsInputting(false);
   };
 
-  //
+  // TODO how to feed input into Answer?
   return (
     <>
       {isInputting && <Input onInput={handleInput} />}
-      {!isInputting && <Text>{input}</Text>}
+      {!isInputting && (
+        <>
+          <Text>{input}</Text>
+          <Answer model={model} messages={messages} />
+        </>
+      )}
     </>
   );
 };
 
 PromptMode.propTypes = {
-  context: PropTypes.instanceOf(Context),
+  context: PropTypes.instanceOf(GptContext),
 };
 
 const Input = ({ onInput }) => {
@@ -208,7 +220,7 @@ const QuestionMode = ({ context }) => {
 };
 
 QuestionMode.propTypes = {
-  context: PropTypes.instanceOf(Context),
+  context: PropTypes.instanceOf(GptContext),
 };
 
 const InteractiveMode = ({ context }) => {
@@ -217,7 +229,7 @@ const InteractiveMode = ({ context }) => {
 };
 
 InteractiveMode.propTypes = {
-  context: PropTypes.instanceOf(Context),
+  context: PropTypes.instanceOf(GptContext),
 };
 
 const Question = ({ messages }) => {

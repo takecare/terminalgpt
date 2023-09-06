@@ -4,12 +4,13 @@
 
 import { Command } from "commander";
 import { DEFAULT_MODEL } from "./gpt.js";
-import { Context } from "./context.js";
+import { GptContext } from "./gptcontext.js";
 import { question, prompt, interactive } from "./commands.js";
 
 import React from "react";
 import { render } from "ink";
 import { App, Mode } from "./tui.js";
+import { GptContextProvider } from "./context.js";
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
@@ -17,7 +18,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 const program = new Command();
-const context = new Context();
+const context = new GptContext();
 
 /** main() allows us to easily bridge Commander and ink together. as Commander
  * is our entry point we have to wait for it to process the input from the
@@ -25,8 +26,16 @@ const context = new Context();
 const main = async (mode, context) => {
   const isDebug = program.opts().debug || !!process.env.DEBUG;
 
+  // FIXME not super stoked about having main() and by extension the App
+  // component accept a "mode" parameter. that logic/decision is necessary but
+  // maybe it should happen here.
+
   // https://github.com/vadimdemedes/ink#rendertree-options
-  const app = render(<App context={context} mode={mode} isDebug={isDebug} />);
+  const app = render(
+    <GptContextProvider context={context}>
+      <App mode={mode} isDebug={isDebug} />
+    </GptContextProvider>
+  );
   await app.waitUntilExit();
 };
 
@@ -95,9 +104,7 @@ program
       );
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      const ask = question(context, (context) =>
-        main(Mode.QUESTION, context)
-      );
+      const ask = question(context, (context) => main(Mode.QUESTION, context));
       ask(program.args, program.opts());
     }
   });

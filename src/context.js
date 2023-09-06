@@ -1,62 +1,21 @@
-import { DEFAULT_MODEL } from "./gpt.js";
+import React, { useContext, useState } from "react";
+import PropTypes from "prop-types";
 
-class Message {
-  #role;
-  #content;
+import { GptContext } from "./gptcontext.js";
 
-  constructor(role, content) {
-    this.#role = role;
-    this.#content = content;
-  }
+const Context = React.createContext();
 
-  get role() {
-    return this.#role;
-  }
+const GptContextProvider = ({ context, children }) => {
+  const [state] = useState(context);
+  // no fancy context logic here
+  return <Context.Provider value={state}>{children}</Context.Provider>;
+};
 
-  get content() {
-    return this.#content;
-  }
+GptContextProvider.propTypes = {
+  context: PropTypes.instanceOf(GptContext).isRequired,
+  children: PropTypes.node.isRequired,
+};
 
-  get message() {
-    return { role: this.#role, content: this.#content };
-  }
-}
+const useGptContext = () => useContext(Context);
 
-class ContextMessage extends Message {
-  constructor(content) {
-    super("system", content);
-  }
-}
-
-class UserMessage extends Message {
-  constructor(content) {
-    super("user", content);
-  }
-}
-
-class AssistantMessage extends Message {
-  constructor(content) {
-    super("assistant", content);
-  }
-}
-
-class Context {
-  #messages;
-  model;
-
-  constructor() {
-    // TODO custom initial system/context message
-    this.#messages = [new ContextMessage("You are a helpful assistant.")];
-    this.model = DEFAULT_MODEL;
-  }
-
-  add(message) {
-    this.#messages.push(message);
-  }
-
-  get messages() {
-    return this.#messages;
-  }
-}
-
-export { Message, UserMessage, AssistantMessage, Context };
+export { GptContextProvider, useGptContext };
