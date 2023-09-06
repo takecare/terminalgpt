@@ -141,11 +141,12 @@ const Input = ({ onInput }) => {
   useEffect(() => {
     keyListener.addListener(ctrlEnterListener);
     return () => keyListener.removeListener(ctrlEnterListener);
-  }, []);
+  }, [text]);
 
   useInput(
     (input, key) => {
       if (key.escape) {
+        onInput(text); // debug purposes, remove
         setIsActive(false);
       } else if (key.return) {
         addInput("\n");
@@ -170,13 +171,11 @@ const Input = ({ onInput }) => {
 
   const first = text.slice(0, cursor);
   const second = text.slice(cursor + 1, text.length);
-  let middle = text[cursor];
-
-  if (!middle) {
-    middle = "⏎";
-  } else if (middle === "\n") {
-    middle = "⏎\n";
-  }
+  const middle = !text[cursor]
+    ? " "
+    : text[cursor] === "\n"
+    ? "⏎\n"
+    : text[cursor];
 
   const UNDERLINE = "\x1b[4m";
   const RESET = "\x1b[0m";
