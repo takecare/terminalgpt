@@ -5,6 +5,12 @@ import { request, fakeRequest } from "./gpt.js";
 import { Context, Message, UserMessage } from "./context.js";
 import { countTokens } from "./tokenizer.js";
 
+// we're using this listener to capture CTRL + ENTER events. it requires a11y
+// services access on macos. an alternative would be iohook but i couldn't get
+// that to work. planning on coming back to it later on.
+import { GlobalKeyboardListener } from "node-global-key-listener";
+const keyListener = new GlobalKeyboardListener();
+
 class Mode {
   static #_PROMPT = "PROMPT";
   static #_QUESTION = "QUESTION";
@@ -91,9 +97,6 @@ const Input = ({ onInput }) => {
   const [text, setText] = useState("");
   const [cursor, setCursor] = useState(0);
 
-  const ENTER_MAX = 3;
-  const [enterCount, setEnterCount] = useState(0);
-
   const addInput = (newText) => {
     const first = text.slice(0, cursor);
     const second = text.slice(cursor + 1, text.length);
@@ -124,19 +127,24 @@ const Input = ({ onInput }) => {
     }
   };
 
+  const ctrlEnterListener = (e, down) => {
+    if (
+      e.state === "DOWN" &&
+      e.name === "RETURN" &&
+      (down["LEFT CTRL"] || down["RIGHT CTRL"])
+    ) {
+      onInput(text);
+      return true;
+    }
+  };
+
+  useEffect(() => {
+    keyListener.addListener(ctrlEnterListener);
+    return () => keyListener.removeListener(ctrlEnterListener);
+  }, []);
+
   useInput(
     (input, key) => {
-      if (!key.return) {
-        setEnterCount(0);
-      } else {
-        setEnterCount(enterCount + 1);
-      }
-
-      if (enterCount === ENTER_MAX) {
-        onInput(text);
-        return;
-      }
-
       if (key.escape) {
         setIsActive(false);
       } else if (key.return) {
@@ -145,7 +153,7 @@ const Input = ({ onInput }) => {
         backspace();
       } else if (key.delete) {
         backspace();
-      } else if (key.leftArrow && text) {
+      } else if (key.leftArrow) {
         cursorToLeft();
       } else if (key.rightArrow) {
         cursorToRight();
@@ -160,11 +168,22 @@ const Input = ({ onInput }) => {
     { isActive }
   );
 
+  const first = text.slice(0, cursor);
+  const second = text.slice(cursor + 1, text.length);
+  let middle = text[cursor];
+
+  if (!middle) {
+    middle = "⏎";
+  } else if (middle === "\n") {
+    middle = "⏎\n";
+  }
+
+  const UNDERLINE = "\x1b[4m";
+  const RESET = "\x1b[0m";
+
   return (
-    <Box flexDirection="column">
-      <Box flexDirection="column">
-        <Text>{text}</Text>
-      </Box>
+    <Box flexDirection="row">
+      <Text>{first + UNDERLINE + middle + RESET + second}</Text>
     </Box>
   );
 };
