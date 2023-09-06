@@ -62,6 +62,7 @@ const TokenEstimation = ({ context }) => {
     const result = countTokens(context);
     setCount(result);
   });
+  // TODO loading while countTokens() doesn't finish...
   return <Text>Token estimation: {count}</Text>;
 };
 
@@ -131,7 +132,10 @@ const Input = ({ onInput }) => {
     if (
       e.state === "DOWN" &&
       e.name === "RETURN" &&
-      (down["LEFT CTRL"] || down["RIGHT CTRL"])
+      (down["LEFT CTRL"] ||
+        down["RIGHT CTRL"] ||
+        down["LEFT SHIFT"] ||
+        down["RIGHT SHIFT"])
     ) {
       onInput(text);
       return true;
