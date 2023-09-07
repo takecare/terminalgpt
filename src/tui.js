@@ -40,12 +40,16 @@ const App = ({ mode, isDebug }) => {
   const { gptContext } = useGptContext();
   const model = gptContext.model ? gptContext.model : "";
 
+  const [input, setInput] = useState("");
+
   return (
     <Box margin={0} width="100%" height="100%" flexDirection="column">
       {isDebug && <Text>Mode: {mode}</Text>}
       {isDebug && <Text>Model: {model}</Text>}
-      <TokenEstimation />
-      {mode === Mode.PROMPT && <PromptMode />}
+      <TokenEstimation input={input} />
+      {mode === Mode.PROMPT && (
+        <PromptMode input={input} setInput={(text) => setInput(text)} />
+      )}
       {mode === Mode.QUESTION && <QuestionMode />}
       {mode === Mode.INTERACTIVE && <InteractiveMode />}
     </Box>
@@ -58,14 +62,15 @@ App.propTypes = {
   isDebug: PropTypes.bool,
 };
 
-const TokenEstimation = () => {
+const TokenEstimation = ({ input }) => {
   const { gptContext } = useGptContext();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const result = countTokens(gptContext);
+    const messages = gptContext.messages.map((m) => m.content);
+    const result = countTokens(input ? [...messages, input] : messages);
     setCount(result);
-  });
+  }, [gptContext, input]);
 
   // TODO loading while countTokens() doesn't finish...
   // TODO update count with changes to context
@@ -75,26 +80,31 @@ const TokenEstimation = () => {
 
 TokenEstimation.propTypes = {
   // context: PropTypes.instanceOf(GptContext).isRequired,
+  input: PropTypes.string,
 };
 
-const PromptMode = () => {
+const PromptMode = ({ input, setInput }) => {
   const { gptContext, addMessage } = useGptContext();
   const model = gptContext.model;
   const messages = gptContext.messages;
 
   const [isInputting, setIsInputting] = useState(true);
-  const [input, setInput] = useState("");
+  // const [input, setInput] = useState("");
 
   const handleInput = (text) => {
-    addMessage(text);
     setInput(text);
+  };
+
+  const handleSubmit = (text) => {
+    addMessage(text);
+    // setInput(text);
     setIsInputting(false);
   };
 
   // TODO how to feed input into Answer?
   return (
     <>
-      {isInputting && <Input onInput={handleInput} />}
+      {isInputting && <Input onInput={handleInput} onSubmit={handleSubmit} />}
       {!isInputting && (
         <>
           <Text>{input}</Text>
@@ -107,9 +117,11 @@ const PromptMode = () => {
 
 PromptMode.propTypes = {
   // context: PropTypes.instanceOf(GptContext),
+  input: PropTypes.string.isRequired,
+  setInput: PropTypes.func.isRequired,
 };
 
-const Input = ({ onInput }) => {
+const Input = ({ onInput, onSubmit }) => {
   const [isActive, setIsActive] = useState(true);
 
   const [text, setText] = useState("");
@@ -154,7 +166,7 @@ const Input = ({ onInput }) => {
         down["LEFT SHIFT"] ||
         down["RIGHT SHIFT"])
     ) {
-      onInput(text);
+      onSubmit(text);
       return true;
     }
   };
@@ -167,7 +179,6 @@ const Input = ({ onInput }) => {
   useInput(
     (input, key) => {
       if (key.escape) {
-        onInput(text); // debug purposes, remove
         setIsActive(false);
       } else if (key.return) {
         addInput("\n");
@@ -186,6 +197,7 @@ const Input = ({ onInput }) => {
       } else {
         addInput(input);
       }
+      onInput(text);
     },
     { isActive }
   );
@@ -210,6 +222,7 @@ const Input = ({ onInput }) => {
 
 Input.propTypes = {
   onInput: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 const QuestionMode = () => {

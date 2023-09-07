@@ -52,6 +52,8 @@ class GptContext {
 
   add(message) {
     // this.#messages.push(message);
+    // FIXME we'll likely need to add other kinds of messages (not just
+    // UserMessages) so this will need changing
     this.#messages.push(new UserMessage(message));
   }
 
