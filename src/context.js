@@ -6,14 +6,13 @@ import { GptContext } from "./gptcontext.js";
 const Context = React.createContext();
 
 const GptContextProvider = ({ context, children }) => {
-  const [state, setState] = useState(context);
-  // no fancy context logic here
+  const [gptContext, setGptContext] = useState(context);
 
   const ctx = {
-    context,
+    gptContext,
     addMessage: (message) => {
-      const newContext = state.addMessage(message);
-      setState(newContext);
+      gptContext.add(message);
+      setGptContext(gptContext);
     },
   };
 

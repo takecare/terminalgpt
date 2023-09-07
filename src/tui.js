@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useApp, useInput, Box, Text } from "ink";
 import { request, fakeRequest } from "./gpt.js";
-import { GptContext, Message, UserMessage } from "./gptcontext.js";
+import { Message, UserMessage } from "./gptcontext.js";
 import { countTokens } from "./tokenizer.js";
 
 // we're using this listener to capture CTRL + ENTER events. it requires a11y
@@ -37,8 +37,8 @@ class Mode {
 }
 
 const App = ({ mode, isDebug }) => {
-  const { context } = useGptContext();
-  const model = context.model ? context.model : "";
+  const { gptContext } = useGptContext();
+  const model = gptContext.model ? gptContext.model : "";
 
   return (
     <Box margin={0} width="100%" height="100%" flexDirection="column">
@@ -46,8 +46,8 @@ const App = ({ mode, isDebug }) => {
       {isDebug && <Text>Model: {model}</Text>}
       <TokenEstimation />
       {mode === Mode.PROMPT && <PromptMode />}
-      {mode === Mode.QUESTION && <QuestionMode context={context} />}
-      {mode === Mode.INTERACTIVE && <InteractiveMode context={context} />}
+      {mode === Mode.QUESTION && <QuestionMode />}
+      {mode === Mode.INTERACTIVE && <InteractiveMode />}
     </Box>
   );
 };
@@ -59,11 +59,11 @@ App.propTypes = {
 };
 
 const TokenEstimation = () => {
-  const { context } = useGptContext();
+  const { gptContext } = useGptContext();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const result = countTokens(context);
+    const result = countTokens(gptContext);
     setCount(result);
   });
 
@@ -78,16 +78,15 @@ TokenEstimation.propTypes = {
 };
 
 const PromptMode = () => {
-  const { context } = useGptContext();
-  const model = context.model;
-  const messages = Array.isArray(context.messages) ? context.messages : [];
-
-  // const [messages, setMessages] = useState(contextMessages);
+  const { gptContext, addMessage } = useGptContext();
+  const model = gptContext.model;
+  const messages = gptContext.messages;
 
   const [isInputting, setIsInputting] = useState(true);
   const [input, setInput] = useState("");
 
   const handleInput = (text) => {
+    addMessage(text);
     setInput(text);
     setIsInputting(false);
   };
@@ -214,9 +213,11 @@ Input.propTypes = {
 };
 
 const QuestionMode = () => {
-  const { context } = useGptContext();
-  const model = context.model;
-  const messages = Array.isArray(context.messages) ? context.messages : [];
+  const { gptContext } = useGptContext();
+  const model = gptContext.model;
+  const messages = Array.isArray(gptContext.messages)
+    ? gptContext.messages
+    : [];
 
   return (
     <>
@@ -231,7 +232,7 @@ QuestionMode.propTypes = {
 };
 
 const InteractiveMode = () => {
-  const { context } = useGptContext();
+  const { gptContext } = useGptContext();
   //
   return <></>;
 };

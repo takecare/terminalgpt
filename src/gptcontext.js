@@ -51,7 +51,8 @@ class GptContext {
   }
 
   add(message) {
-    this.#messages.push(message);
+    // this.#messages.push(message);
+    this.#messages.push(new UserMessage(message));
   }
 
   get messages() {
