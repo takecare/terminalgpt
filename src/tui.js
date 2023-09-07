@@ -37,14 +37,14 @@ class Mode {
 }
 
 const App = ({ mode, isDebug }) => {
-  const context = useGptContext();
+  const { context } = useGptContext();
   const model = context.model ? context.model : "";
 
   return (
     <Box margin={0} width="100%" height="100%" flexDirection="column">
       {isDebug && <Text>Mode: {mode}</Text>}
       {isDebug && <Text>Model: {model}</Text>}
-      <TokenEstimation context={context} />
+      <TokenEstimation />
       {mode === Mode.PROMPT && <PromptMode context={context} />}
       {mode === Mode.QUESTION && <QuestionMode context={context} />}
       {mode === Mode.INTERACTIVE && <InteractiveMode context={context} />}
@@ -58,18 +58,23 @@ App.propTypes = {
   isDebug: PropTypes.bool,
 };
 
-const TokenEstimation = ({ context }) => {
+const TokenEstimation = () => {
+  const { context } = useGptContext();
   const [count, setCount] = useState(0);
+
   useEffect(() => {
     const result = countTokens(context);
     setCount(result);
   });
+
   // TODO loading while countTokens() doesn't finish...
+  // TODO update count with changes to context
+
   return <Text>Token estimation: {count}</Text>;
 };
 
 TokenEstimation.propTypes = {
-  context: PropTypes.instanceOf(GptContext).isRequired,
+  // context: PropTypes.instanceOf(GptContext).isRequired,
 };
 
 const PromptMode = ({ context }) => {
