@@ -45,7 +45,7 @@ const App = ({ mode, isDebug }) => {
       {isDebug && <Text>Mode: {mode}</Text>}
       {isDebug && <Text>Model: {model}</Text>}
       <TokenEstimation />
-      {mode === Mode.PROMPT && <PromptMode context={context} />}
+      {mode === Mode.PROMPT && <PromptMode />}
       {mode === Mode.QUESTION && <QuestionMode context={context} />}
       {mode === Mode.INTERACTIVE && <InteractiveMode context={context} />}
     </Box>
@@ -77,7 +77,8 @@ TokenEstimation.propTypes = {
   // context: PropTypes.instanceOf(GptContext).isRequired,
 };
 
-const PromptMode = ({ context }) => {
+const PromptMode = () => {
+  const { context } = useGptContext();
   const model = context.model;
   const messages = Array.isArray(context.messages) ? context.messages : [];
 
@@ -106,7 +107,7 @@ const PromptMode = ({ context }) => {
 };
 
 PromptMode.propTypes = {
-  context: PropTypes.instanceOf(GptContext),
+  // context: PropTypes.instanceOf(GptContext),
 };
 
 const Input = ({ onInput }) => {
@@ -212,7 +213,8 @@ Input.propTypes = {
   onInput: PropTypes.func.isRequired,
 };
 
-const QuestionMode = ({ context }) => {
+const QuestionMode = () => {
+  const { context } = useGptContext();
   const model = context.model;
   const messages = Array.isArray(context.messages) ? context.messages : [];
 
@@ -225,16 +227,17 @@ const QuestionMode = ({ context }) => {
 };
 
 QuestionMode.propTypes = {
-  context: PropTypes.instanceOf(GptContext),
+  // context: PropTypes.instanceOf(GptContext),
 };
 
-const InteractiveMode = ({ context }) => {
+const InteractiveMode = () => {
+  const { context } = useGptContext();
   //
   return <></>;
 };
 
 InteractiveMode.propTypes = {
-  context: PropTypes.instanceOf(GptContext),
+  // context: PropTypes.instanceOf(GptContext),
 };
 
 const Question = ({ messages }) => {
