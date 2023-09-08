@@ -76,7 +76,7 @@ const TokenEstimation = ({ input }) => {
   return (
     <Box flexDirection="row">
       <Text>Token estimation: </Text>
-      <>{isLoading ? <Loading /> : <Text>{count}</Text>}</>
+      {isLoading ? <Loading /> : <Text>{count}</Text>}
     </Box>
   );
 };
@@ -280,16 +280,12 @@ const Answer = ({ model, messages }) => {
       // const apiResponse = await request(model, messages);
       const response = apiResponse.data.choices[0];
       setResponse(response.message.content);
-      exit();
+      exit(); // FIXME this needs to be removed for interactive mode
     };
     get();
   }, [messages]);
 
-  return (
-    <>
-      <Text>Response: {response || <Loading />}</Text>
-    </>
-  );
+  return <Text>Response: {response || <Loading />}</Text>;
 };
 
 Answer.propTypes = {
