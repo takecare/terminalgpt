@@ -299,34 +299,27 @@ Answer.propTypes = {
 };
 
 const Loading = () => {
-  const PROGRESS_BAR_LENGTH = 4;
-  const REFRESH_INTERVAL_MILLIS = 200;
+  const spinner = {
+    interval: 80, // millis
+    frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+  };
 
-  const [progress, setProgress] = useState(".");
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => {
-      if (progress.length <= PROGRESS_BAR_LENGTH) {
-        setProgress(`${progress} .`);
+      if (progress < spinner.frames.length) {
+        setProgress(progress + 1);
       } else {
-        setProgress(".");
+        setProgress(0);
       }
-    }, REFRESH_INTERVAL_MILLIS);
+    }, spinner.interval);
     return () => {
       clearInterval(id);
     };
   });
 
-  return (
-    <>
-      <Text>{progress}</Text>
-    </>
-  );
-};
-
-const spinner = {
-  interval: 80,
-  frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+  return <Text>{spinner.frames[progress]}</Text>;
 };
 
 export { App, Mode };
