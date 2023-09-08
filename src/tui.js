@@ -64,16 +64,21 @@ App.propTypes = {
 const TokenEstimation = ({ input }) => {
   const { gptContext } = useGptContext();
   const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const messages = gptContext.messages.map((m) => m.content);
     const result = countTokens(input ? [...messages, input] : messages);
     setCount(result);
+    setIsLoading(false);
   }, [gptContext, input]);
 
-  // TODO loading while countTokens() doesn't finish...
-
-  return <Text>Token estimation: {count}</Text>;
+  return (
+    <Box flexDirection="row">
+      <Text>Token estimation: </Text>
+      <>{isLoading ? <Loading /> : <Text>{count}</Text>}</>
+    </Box>
+  );
 };
 
 TokenEstimation.propTypes = {
@@ -263,8 +268,7 @@ Question.propTypes = {
 };
 
 const Answer = ({ model, messages }) => {
-  // https://github.com/vadimdemedes/ink#useapp
-  const { exit } = useApp();
+  const { exit } = useApp(); // https://github.com/vadimdemedes/ink#useapp
   const [response, setResponse] = useState();
 
   // TODO offer to copy answer?
