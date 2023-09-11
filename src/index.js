@@ -3,14 +3,15 @@
 // https://github.com/vadimdemedes/import-jsx ⤴
 
 import { Command } from "commander";
+import { interactive, prompt, question } from "./commands.js";
 import { DEFAULT_MODEL } from "./gpt.js";
 import { GptContext } from "./gptcontext.js";
-import { question, prompt, interactive } from "./commands.js";
 
-import React from "react";
 import { render } from "ink";
-import { App, Mode } from "./tui.js";
+import React from "react";
+import { App } from "./components/App.js";
 import { GptContextProvider } from "./context.js";
+import Mode from "./mode.js";
 
 if (!process.env.OPENAI_API_KEY) {
   console.error("No OpenAI API key found. Please set it via OPENAI_API_KEY.");
