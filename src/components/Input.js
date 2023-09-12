@@ -1,6 +1,6 @@
 import { Box, Text, useInput } from "ink";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 // we're using this listener to capture CTRL + ENTER events. it requires a11y
 // services access on macos. an alternative would be iohook but i couldn't get
@@ -14,14 +14,17 @@ const Input = ({ onInput, onSubmit }) => {
   const [text, setText] = useState("");
   const [cursor, setCursor] = useState(0);
 
-  const addInput = (newText) => {
-    const first = text.slice(0, cursor);
-    const second = text.slice(cursor + 1, text.length);
-    const middle = newText + (text[cursor] ? text[cursor] : "");
+  const addInput = useCallback(
+    (newText) => {
+      const first = text.slice(0, cursor);
+      const second = text.slice(cursor + 1, text.length);
+      const middle = newText + (text[cursor] ? text[cursor] : "");
 
-    setText(first + middle + second);
-    setCursor(cursor + newText.length);
-  };
+      setText(first + middle + second);
+      setCursor(cursor + newText.length);
+    },
+    [text, cursor]
+  );
 
   const backspace = () => {
     if (cursor === 0) {
@@ -44,24 +47,24 @@ const Input = ({ onInput, onSubmit }) => {
     }
   };
 
-  const ctrlEnterListener = (e, down) => {
-    if (
-      e.state === "DOWN" &&
-      e.name === "RETURN" &&
-      (down["LEFT CTRL"] ||
-        down["RIGHT CTRL"] ||
-        down["LEFT SHIFT"] ||
-        down["RIGHT SHIFT"])
-    ) {
-      addInput("\n");
-      return true;
-    }
-  };
-
   useEffect(() => {
+    const ctrlEnterListener = (e, down) => {
+      if (
+        e.state === "DOWN" &&
+        e.name === "RETURN" &&
+        (down["LEFT CTRL"] ||
+          down["RIGHT CTRL"] ||
+          down["LEFT SHIFT"] ||
+          down["RIGHT SHIFT"])
+      ) {
+        addInput("\n");
+        return true;
+      }
+    };
+
     keyListener.addListener(ctrlEnterListener);
     return () => keyListener.removeListener(ctrlEnterListener);
-  }, [text]);
+  }, [text, addInput]);
 
   useInput(
     (input, key) => {
