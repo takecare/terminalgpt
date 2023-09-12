@@ -25,7 +25,7 @@ const Answer = ({ model, messages }) => {
       exit(); // FIXME this needs to be removed for interactive mode
     };
     get();
-  }, [messages]);
+  }, [exit, messages, model]);
 
   return <Text>Response: {response || <Loading />}</Text>;
 };

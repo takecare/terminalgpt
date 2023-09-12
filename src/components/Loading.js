@@ -1,12 +1,12 @@
 import { Text } from "ink";
 import React, { useEffect, useState } from "react";
 
-const Loading = () => {
-  const spinner = {
-    interval: 80, // millis
-    frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-  };
+const spinner = {
+  interval: 80, // millis
+  frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+};
 
+const Loading = () => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const Loading = () => {
     return () => {
       clearInterval(id);
     };
-  });
+  }, [progress]);
 
   return <Text>{spinner.frames[progress]}</Text>;
 };
