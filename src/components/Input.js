@@ -53,7 +53,7 @@ const Input = ({ onInput, onSubmit }) => {
         down["LEFT SHIFT"] ||
         down["RIGHT SHIFT"])
     ) {
-      onSubmit(text);
+      addInput("\n");
       return true;
     }
   };
@@ -68,7 +68,7 @@ const Input = ({ onInput, onSubmit }) => {
       if (key.escape) {
         setIsActive(false);
       } else if (key.return) {
-        addInput("\n");
+        onSubmit(text);
       } else if (key.backspace) {
         backspace();
       } else if (key.delete) {
