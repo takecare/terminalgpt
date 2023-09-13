@@ -61,8 +61,6 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
-    console.log("question mode - options:", program.opts());
-
     const ask = question(context, (context) => main(Mode.QUESTION, context));
     ask(q, program.opts());
   });

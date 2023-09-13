@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 
-import { GptContext } from "./gptcontext.js";
+import { GptContext, UserMessage } from "./gptcontext.js";
 
 const Context = React.createContext();
 
@@ -11,7 +11,7 @@ const GptContextProvider = ({ context, children }) => {
   const ctx = {
     gptContext,
     addMessage: (message) => {
-      gptContext.add(message);
+      gptContext.add(new UserMessage(message));
       setGptContext(gptContext);
     },
   };

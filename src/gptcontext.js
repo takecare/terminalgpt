@@ -20,6 +20,10 @@ class Message {
   get message() {
     return { role: this.#role, content: this.#content };
   }
+
+  toString() {
+    return `{ role: ${this.#role}, content: ${this.#content} }`;
+  }
 }
 
 class ContextMessage extends Message {
@@ -51,10 +55,7 @@ class GptContext {
   }
 
   add(message) {
-    // this.#messages.push(message);
-    // FIXME we'll likely need to add other kinds of messages (not just
-    // UserMessages) so this will need changing
-    this.#messages.push(new UserMessage(message));
+    this.#messages.push(message);
   }
 
   get messages() {
