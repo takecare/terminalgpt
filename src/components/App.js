@@ -8,7 +8,7 @@ import { PromptMode } from "./PromptMode.js";
 import { QuestionMode } from "./QuestionMode.js";
 import { TokenEstimation } from "./TokenEstimation.js";
 
-const App = ({ mode, isDebug }) => {
+const App = ({ mode, isDebug = false, shouldCopyAnswer = false }) => {
   const { gptContext } = useGptContext();
   const model = gptContext.model ? gptContext.model : "";
 
@@ -22,7 +22,9 @@ const App = ({ mode, isDebug }) => {
       {mode === Mode.PROMPT && (
         <PromptMode input={input} updateInput={(text) => setInput(text)} />
       )}
-      {mode === Mode.QUESTION && <QuestionMode />}
+      {mode === Mode.QUESTION && (
+        <QuestionMode shouldCopyAnswer={shouldCopyAnswer} />
+      )}
       {mode === Mode.INTERACTIVE && <InteractiveMode />}
     </Box>
   );
@@ -31,6 +33,7 @@ const App = ({ mode, isDebug }) => {
 App.propTypes = {
   mode: PropTypes.oneOf(Mode.values()).isRequired,
   isDebug: PropTypes.bool,
+  shouldCopyAnswer: PropTypes.bool,
 };
 
 export { App };

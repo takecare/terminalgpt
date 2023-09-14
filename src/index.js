@@ -26,6 +26,7 @@ const context = new GptContext();
  * shell - i.e. command args - before we render our app with ink. */
 const main = async (mode, context) => {
   const isDebug = program.opts().debug || !!process.env.DEBUG;
+  const shouldCopyAnswer = program.opts().copy;
 
   // FIXME not super stoked about having main() and by extension the App
   // component accept a "mode" parameter. that logic/decision is necessary but
@@ -34,7 +35,7 @@ const main = async (mode, context) => {
   // https://github.com/vadimdemedes/ink#rendertree-options
   const app = render(
     <GptContextProvider context={context}>
-      <App mode={mode} isDebug={isDebug} />
+      <App mode={mode} isDebug={isDebug} shouldCopyAnswer={shouldCopyAnswer} />
     </GptContextProvider>
   );
   await app.waitUntilExit();

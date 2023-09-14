@@ -1,12 +1,12 @@
+import clipboard from "clipboardy";
 import { Text, useApp } from "ink";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import { request, fakeRequest } from "../gpt.js";
+import { fakeRequest } from "../gpt.js";
 import { Message } from "../gptcontext.js";
 import { Loading } from "./Loading.js";
-// import clipboard from "clipboardy";
 
-const Answer = ({ model, messages }) => {
+const Answer = ({ model, messages, shouldCopyAnswer = false }) => {
   const { exit } = useApp(); // https://github.com/vadimdemedes/ink#useapp
   const [response, setResponse] = useState();
 
@@ -20,12 +20,14 @@ const Answer = ({ model, messages }) => {
       const response = apiResponse.data.choices[0];
       setResponse(response.message.content);
 
-      // clipboard.writeSync(response.message.content);
+      if (shouldCopyAnswer) {
+        clipboard.writeSync(response.message.content);
+      }
 
       exit(); // FIXME this needs to be removed for interactive mode
     };
     get();
-  }, [exit, messages, model]);
+  }, [exit, messages, model, shouldCopyAnswer]);
 
   return <Text>Response: {response || <Loading />}</Text>;
 };
@@ -33,7 +35,7 @@ const Answer = ({ model, messages }) => {
 Answer.propTypes = {
   model: PropTypes.string.isRequired,
   messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
-  exit: PropTypes.func,
+  shouldCopyAnswer: PropTypes.bool,
 };
 
 export { Answer };
