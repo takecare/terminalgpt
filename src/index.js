@@ -98,8 +98,6 @@ program
 program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
-    console.log("options:", program.opts()); // debug, remove! @rui
-
     if (program.args.length === 0) {
       const interact = interactive(context, (context) =>
         main(Mode.INTERACTIVE, context)

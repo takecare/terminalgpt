@@ -33,6 +33,7 @@ const App = ({ mode, isDebug = false, shouldCopyAnswer = false }) => {
 App.propTypes = {
   mode: PropTypes.oneOf(Mode.values()).isRequired,
   isDebug: PropTypes.bool,
+  // TODO consider having shouldCopyAnswer as part of the context to avoid drilling props
   shouldCopyAnswer: PropTypes.bool,
 };
 

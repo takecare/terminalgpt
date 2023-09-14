@@ -44,6 +44,7 @@ class AssistantMessage extends Message {
   }
 }
 
+// TODO consider renaming to "ProgramContext" as we add more attributes/fields
 class GptContext {
   #messages;
   model;
