@@ -53,6 +53,8 @@ program.option(
 
 program.option("-d, --debug", "Activate debug mode.");
 
+program.option("-c, --copy", "Copy answer to clipboard.");
+
 program
   .command("question")
   .alias("q")
