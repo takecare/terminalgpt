@@ -1,7 +1,8 @@
-import { Text } from "ink";
+import { Text, useApp } from "ink";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { useGptContext } from "../context.js";
+import { UserMessage } from "../gptcontext.js";
 import { Answer } from "./Answer.js";
 import { Input } from "./Input.js";
 
@@ -9,6 +10,7 @@ const PromptMode = ({ input, updateInput }) => {
   const { gptContext, addMessage } = useGptContext();
   const model = gptContext.model;
   const messages = gptContext.messages;
+  const { exit } = useApp();
 
   const [isInputting, setIsInputting] = useState(true);
 
@@ -17,7 +19,7 @@ const PromptMode = ({ input, updateInput }) => {
   };
 
   const handleSubmit = (text) => {
-    addMessage(text);
+    addMessage(new UserMessage(text));
     setIsInputting(false);
   };
 
@@ -27,7 +29,7 @@ const PromptMode = ({ input, updateInput }) => {
       {!isInputting && (
         <>
           <Text>{input}</Text>
-          <Answer model={model} messages={messages} />
+          <Answer model={model} messages={messages} onAnswered={() => exit()} />
         </>
       )}
     </>
