@@ -13,7 +13,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 async function request(model, messages) {
-  const apiMessages = messages.map(m => m.message);
+  const apiMessages = messages.map((m) => m.message);
   try {
     return await openai.createChatCompletion({
       model,
@@ -61,14 +61,14 @@ async function request(model, messages) {
 
 async function fakeRequest(model, messages, fails = false) {
   const contents = messages
-    .map((m) => `'${m.message.role}:${m.message.content}'`)
+    .map((m) => `${m.message.role}:"${m.message.content}"`)
     .reduce((p, c) => `${p}, ${c}`);
   const response = {
     data: {
       choices: [
         {
           message: {
-            content: `${model} response for "${contents}"`,
+            content: `${model} response for ${contents}`,
           },
         },
       ],
