@@ -1,16 +1,18 @@
 import clipboard from "clipboardy";
-import { Text, useApp } from "ink";
+import { Text } from "ink";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
+import { useGptContext } from "../context.js";
 import { fakeRequest } from "../gpt.js";
-import { Message } from "../gptcontext.js";
+import { AssistantMessage } from "../gptcontext.js";
 import { Loading } from "./Loading.js";
 
-const Answer = ({ model, messages, shouldCopyAnswer = false }) => {
-  const { exit } = useApp(); // https://github.com/vadimdemedes/ink#useapp
+const Answer = ({ shouldCopyAnswer = false, onAnswered }) => {
   const [response, setResponse] = useState();
+  const { gptContext, addMessage } = useGptContext();
+  const model = gptContext.model;
+  const messages = gptContext.messages;
 
-  // TODO offer to copy answer? what's the best ux for this?
   // TODO measure response time (debug mode)
 
   useEffect(() => {
@@ -19,23 +21,25 @@ const Answer = ({ model, messages, shouldCopyAnswer = false }) => {
       // const apiResponse = await request(model, messages);
       const response = apiResponse.data.choices[0];
       setResponse(response.message.content);
+      addMessage(new AssistantMessage(response.message.content));
 
       if (shouldCopyAnswer) {
         clipboard.writeSync(response.message.content);
       }
 
-      exit(); // FIXME this needs to be removed for interactive mode
+      onAnswered();
     };
     get();
-  }, [exit, messages, model, shouldCopyAnswer]);
+  }, [addMessage, messages, model, onAnswered, shouldCopyAnswer]);
 
-  return <Text>Response: {response || <Loading />}</Text>;
+  // TODO add answer to global context?
+
+  return <Text>{response || <Loading />}</Text>;
 };
 
 Answer.propTypes = {
-  model: PropTypes.string.isRequired,
-  messages: PropTypes.arrayOf(PropTypes.instanceOf(Message)).isRequired,
   shouldCopyAnswer: PropTypes.bool,
+  onAnswered: PropTypes.func.isRequired,
 };
 
 export { Answer };
