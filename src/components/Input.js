@@ -48,7 +48,7 @@ const Input = ({ onInput, onSubmit }) => {
   };
 
   useEffect(() => {
-    const ctrlEnterListener = (e, down) => {
+    const newLineEnteredListener = (e, down) => {
       if (
         e.state === "DOWN" &&
         e.name === "RETURN" &&
@@ -62,8 +62,8 @@ const Input = ({ onInput, onSubmit }) => {
       }
     };
 
-    keyListener.addListener(ctrlEnterListener);
-    return () => keyListener.removeListener(ctrlEnterListener);
+    keyListener.addListener(newLineEnteredListener);
+    return () => keyListener.removeListener(newLineEnteredListener);
   }, [text, addInput]);
 
   useInput(
