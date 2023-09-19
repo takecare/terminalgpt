@@ -12,7 +12,7 @@ const App = ({ mode, isDebug = false, shouldCopyAnswer = false }) => {
   const { gptContext } = useGptContext();
   const model = gptContext.model ? gptContext.model : "";
 
-  const [input, setInput] = useState("");
+  const [input, updateInput] = useState("");
 
   return (
     <Box margin={0} width="100%" height="100%" flexDirection="column">
@@ -20,12 +20,17 @@ const App = ({ mode, isDebug = false, shouldCopyAnswer = false }) => {
       {isDebug && <Text>Model: {model}</Text>}
       <TokenEstimation input={input} />
       {mode === Mode.PROMPT && (
-        <PromptMode input={input} updateInput={(text) => setInput(text)} />
+        <PromptMode input={input} updateInput={(text) => updateInput(text)} />
       )}
       {mode === Mode.QUESTION && (
         <QuestionMode shouldCopyAnswer={shouldCopyAnswer} />
       )}
-      {mode === Mode.INTERACTIVE && <InteractiveMode />}
+      {mode === Mode.INTERACTIVE && (
+        <InteractiveMode
+          input={input}
+          updateInput={(text) => updateInput(text)}
+        />
+      )}
     </Box>
   );
 };
