@@ -1,6 +1,6 @@
 import { Box, Text, useApp } from "ink";
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGptContext } from "../context.js";
 import { UserMessage } from "../gptcontext.js";
 import { Answer } from "./Answer.js";

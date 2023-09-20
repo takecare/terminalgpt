@@ -51,7 +51,13 @@ class GptContext {
 
   constructor() {
     // TODO custom initial system/context message
-    this.#messages = [new ContextMessage("You are a helpful assistant.")];
+    this.#messages = [
+      new ContextMessage(
+        `When you provide a link to a webpage,
+please reference the URL itself. If you provide any code, please use Markdown
+code blocks and reference the language.`
+      ),
+    ];
     this.model = DEFAULT_MODEL;
   }
 

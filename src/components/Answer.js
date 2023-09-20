@@ -3,7 +3,7 @@ import { Text } from "ink";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { useGptContext } from "../context.js";
-import { fakeRequest } from "../gpt.js";
+import { request, fakeRequest } from "../gpt.js";
 import { AssistantMessage } from "../gptcontext.js";
 import { Loading } from "./Loading.js";
 
@@ -17,8 +17,8 @@ const Answer = ({ shouldCopyAnswer = false, onAnswered }) => {
 
   useEffect(() => {
     const get = async () => {
-      const apiResponse = await fakeRequest(model, messages);
-      // const apiResponse = await request(model, messages);
+      // const apiResponse = await fakeRequest(model, messages);
+      const apiResponse = await request(model, messages);
       const response = apiResponse.data.choices[0];
       setResponse(response.message.content);
       addMessage(new AssistantMessage(response.message.content));
