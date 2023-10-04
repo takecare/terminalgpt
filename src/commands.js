@@ -8,24 +8,25 @@ import { UserMessage } from "./gptcontext.js";
 // more context to the model before executing the callback (which should feed
 // the context to the App component)
 
-const prompt = (context, callback) =>
+const prompt = (callback) =>
   async function (options) {
-    callback(context);
+    callback();
   };
 
-const question = (context, callback) =>
+const question = (callback) =>
   async function (question, options) {
     // TODO deal with possibility of args being an array of str
     // TODO how to deal with erroneous responses?
-    context.add(new UserMessage(question[0]));
-    callback(context);
+    // context.add(new UserMessage(question[0]));
+    // callback(context);
+    callback(new UserMessage(question[0]));
   };
 
-const interactive = (context, callback) =>
+const interactive = (callback) =>
   // TODO do we want to accept args here or just options? we could accept an
   // optional question to kickstart the interactive session
   async function (args, options) {
-    callback(context);
+    callback();
   };
 
 export { prompt, question, interactive };

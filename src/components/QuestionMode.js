@@ -1,3 +1,4 @@
+import { useApp } from "ink";
 import PropTypes from "prop-types";
 import React from "react";
 import { useGptContext } from "../context.js";
@@ -5,11 +6,11 @@ import { Answer } from "./Answer.js";
 import { Question } from "./Question.js";
 
 const QuestionMode = ({ shouldCopyAnswer = false }) => {
-  const { gptContext } = useGptContext();
-  const model = gptContext.model;
-  const messages = Array.isArray(gptContext.messages)
-    ? gptContext.messages
-    : [];
+  const { exit } = useApp();
+  const { model, messages } = useGptContext();
+  // const messages = Array.isArray(messages)
+  //   ? gptContext.messages
+  //   : [];
 
   return (
     <>
@@ -18,6 +19,9 @@ const QuestionMode = ({ shouldCopyAnswer = false }) => {
         model={model}
         messages={messages}
         shouldCopyAnswer={shouldCopyAnswer}
+        onAnswered={() => {
+          exit();
+        }}
       />
     </>
   );

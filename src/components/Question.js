@@ -4,9 +4,8 @@ import React from "react";
 import { Message, UserMessage } from "../gptcontext.js";
 
 const Question = ({ messages }) => {
-  const questionContent = messages.find(
-    (m) => m instanceof UserMessage
-  ).content;
+  const userMessage = messages.find((m) => m instanceof UserMessage);
+  const questionContent = userMessage ? userMessage.content : "";
 
   return (
     <Box flexDirection="column">

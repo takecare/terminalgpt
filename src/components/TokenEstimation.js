@@ -12,21 +12,24 @@ import { countTokens } from "../tokenizer.js";
  * than having it passed via a command-line argument)
  */
 const TokenEstimation = ({ input }) => {
-  const { gptContext } = useGptContext();
+  const { gptContext, promptTokenCount, completionsTokenCount } =
+    useGptContext();
   const [count, setCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const messages = gptContext.messages.map((m) => m.content);
-    const result = countTokens(input ? [...messages, input] : messages);
-
-    setCount(result);
+    const result = countTokens([input]);
+    const total = result + promptTokenCount + completionsTokenCount;
+    setCount(total);
     setIsLoading(false);
-  }, [gptContext, input]);
+  }, [gptContext, promptTokenCount, completionsTokenCount, input]);
+
+  // TODO how to flip between "estimation mode" and "count mode"?
 
   return (
     <Box flexDirection="row">
       <Text>Token estimation: </Text>
+      {/* {input ? <Text>Token estimation: </Text> : <Text>Token count: </Text>} */}
       {isLoading ? <Loading /> : <Text>{count}</Text>}
     </Box>
   );

@@ -5,7 +5,7 @@
 import { Command } from "commander";
 import { interactive, prompt, question } from "./commands.js";
 import { DEFAULT_MODEL } from "./gpt.js";
-import { GptContext } from "./gptcontext.js";
+import { UserMessage } from "./gptcontext.js";
 
 import { render } from "ink";
 import React from "react";
@@ -19,12 +19,11 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 const program = new Command();
-const context = new GptContext();
 
 /** main() allows us to easily bridge Commander and ink together. as Commander
  * is our entry point we have to wait for it to process the input from the
  * shell - i.e. command args - before we render our app with ink. */
-const main = async (mode, context) => {
+const main = async (mode, initialQuestion) => {
   const isDebug = program.opts().debug || !!process.env.DEBUG;
   const shouldCopyAnswer = program.opts().copy;
 
@@ -34,7 +33,7 @@ const main = async (mode, context) => {
 
   // https://github.com/vadimdemedes/ink#rendertree-options
   const app = render(
-    <GptContextProvider context={context}>
+    <GptContextProvider initialQuestion={initialQuestion}>
       <App mode={mode} isDebug={isDebug} shouldCopyAnswer={shouldCopyAnswer} />
     </GptContextProvider>
   );
@@ -64,8 +63,7 @@ program
   .action((q, _options, _command) => {
     // q is the question argument, which can be an array containing many strings
     // if not using quotes or an array with just an element (the whole question)
-    const ask = question(context, (context) => main(Mode.QUESTION, context));
-    ask(q, program.opts());
+    main(Mode.QUESTION, new UserMessage(q[0]));
   });
 
 program
@@ -76,8 +74,7 @@ program
   )
   .action((_q, _options, _command) => {
     // we don't care about any question passed here as we'll provide an input
-    const p = prompt(context, (context) => main(Mode.PROMPT, context));
-    p(program.opts());
+    main(Mode.PROMPT);
   });
 
 program
@@ -89,22 +86,17 @@ program
   .argument("[question...]", "An optional question to kickstart the session.")
   .action((q, _options, _command) => {
     // we don't care about any question passed here as we'll provide an input
-    const interact = interactive(context, (context) =>
-      main(Mode.INTERACTIVE, context)
-    );
-    interact(q, program.opts());
+    main(Mode.INTERACTIVE);
   });
 
 program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
     if (program.args.length === 0) {
-      const interact = interactive(context, (context) =>
-        main(Mode.INTERACTIVE, context)
-      );
+      const interact = interactive(() => main(Mode.INTERACTIVE));
       interact(program.args, program.opts());
     } else if (program.args.length > 0) {
-      const ask = question(context, (context) => main(Mode.QUESTION, context));
+      const ask = question(() => main(Mode.QUESTION));
       ask(program.args, program.opts());
     }
   });

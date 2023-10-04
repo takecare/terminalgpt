@@ -59,19 +59,42 @@ async function request(model, messages) {
 //       // console.error(`${e.response.status}: ${e.response.data.error.message}`);
 //     });
 
+// {
+//   id: 'chatcmpl-83rajoAppxdBlCxPSVvQaWYz40nYh',
+//   object: 'chat.completion',
+//   created: 1695931681,
+//   model: 'gpt-3.5-turbo-0613',
+//   choices: [
+//     {
+//       index: 0,
+//       message: { role: 'assistant', content: 'Olá! Como posso ajudar você hoje?' },
+//       finish_reason: 'stop'
+//     }
+//   ],
+//   usage: { prompt_tokens: 44, completion_tokens: 11, total_tokens: 55 }
+// }
+
 async function fakeRequest(model, messages, fails = false) {
   const contents = messages
     .map((m) => `${m.message.role}:"${m.message.content}"`)
-    .reduce((p, c) => `${p}, ${c}`);
+    .reduce((acc, c) => `${acc}, ${c}`, "");
+
+  console.log(`[gpt]\t\tfakeRequest(${messages[messages.length - 1].content})`);
+
   const response = {
     data: {
       choices: [
         {
           message: {
-            content: `${model} response for ${contents}`,
+            content: `Response for "${messages[messages.length - 1].content}".`,
           },
         },
       ],
+      usage: {
+        total_tokens: 20,
+        prompt_tokens: 10,
+        completion_tokens: 10,
+      },
     },
   };
   const promise = new Promise((resolve, reject) => {

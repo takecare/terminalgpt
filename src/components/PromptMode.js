@@ -7,9 +7,7 @@ import { Answer } from "./Answer.js";
 import { Input } from "./Input.js";
 
 const PromptMode = ({ input, updateInput }) => {
-  const { gptContext, addMessage } = useGptContext();
-  const model = gptContext.model;
-  const messages = gptContext.messages;
+  const { model, messages, addMessage } = useGptContext();
   const { exit } = useApp();
 
   const [isInputting, setIsInputting] = useState(true);

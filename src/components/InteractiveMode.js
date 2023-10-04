@@ -7,9 +7,9 @@ import { Answer } from "./Answer.js";
 import { Input } from "./Input.js";
 
 const InteractiveMode = ({ input, updateInput }) => {
-  const { gptContext, addMessage } = useGptContext();
-  const model = gptContext.model;
-  const messages = gptContext.messages;
+  const { gptContext, model, messages, addMessage } = useGptContext();
+  // const model = gptContext.model;
+  // const messages = gptContext.messages;
   const { exit } = useApp();
 
   const [isInputting, setIsInputting] = useState(true);

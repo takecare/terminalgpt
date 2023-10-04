@@ -9,9 +9,7 @@ import { QuestionMode } from "./QuestionMode.js";
 import { TokenEstimation } from "./TokenEstimation.js";
 
 const App = ({ mode, isDebug = false, shouldCopyAnswer = false }) => {
-  const { gptContext } = useGptContext();
-  const model = gptContext.model ? gptContext.model : "";
-
+  const { model } = useGptContext();
   const [input, updateInput] = useState("");
 
   return (
