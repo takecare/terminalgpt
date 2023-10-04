@@ -8,9 +8,6 @@ import { Question } from "./Question.js";
 const QuestionMode = ({ shouldCopyAnswer = false }) => {
   const { exit } = useApp();
   const { model, messages } = useGptContext();
-  // const messages = Array.isArray(messages)
-  //   ? gptContext.messages
-  //   : [];
 
   return (
     <>

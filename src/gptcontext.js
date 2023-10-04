@@ -44,30 +44,4 @@ class AssistantMessage extends Message {
   }
 }
 
-// TODO consider renaming to "ProgramContext" as we add more attributes/fields
-class GptContext {
-  #messages;
-  model;
-
-  constructor() {
-    // TODO custom initial system/context message
-    this.#messages = [
-      new ContextMessage(
-        `When you provide a link to a webpage,
-please reference the URL itself. If you provide any code, please use Markdown
-code blocks and reference the language.`
-      ),
-    ];
-    this.model = DEFAULT_MODEL;
-  }
-
-  add(message) {
-    this.#messages.push(message);
-  }
-
-  get messages() {
-    return this.#messages;
-  }
-}
-
-export { Message, UserMessage, AssistantMessage, GptContext };
+export { Message, UserMessage, AssistantMessage };

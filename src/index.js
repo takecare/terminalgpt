@@ -3,7 +3,6 @@
 // https://github.com/vadimdemedes/import-jsx ⤴
 
 import { Command } from "commander";
-import { interactive, prompt, question } from "./commands.js";
 import { DEFAULT_MODEL } from "./gpt.js";
 import { UserMessage } from "./gptcontext.js";
 
@@ -93,11 +92,10 @@ program
   .command("default", { hidden: true, isDefault: true })
   .action((_options, _command) => {
     if (program.args.length === 0) {
-      const interact = interactive(() => main(Mode.INTERACTIVE));
-      interact(program.args, program.opts());
+      main(Mode.INTERACTIVE);
     } else if (program.args.length > 0) {
-      const ask = question(() => main(Mode.QUESTION));
-      ask(program.args, program.opts());
+      const question = program.args.reduce((acc, s) => `${acc} ${s}`);
+      main(Mode.QUESTION, new UserMessage(question));
     }
   });
 

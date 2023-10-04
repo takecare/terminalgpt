@@ -16,8 +16,6 @@ const Answer = ({ shouldCopyAnswer = false, onAnswered }) => {
     setQuestionsTokenCount,
     setAnswersTokenCount,
   } = useGptContext();
-  // const model = gptContext.model;
-  // const messages = gptContext.messages;
 
   // TODO measure response time (debug mode)
 
@@ -44,8 +42,6 @@ const Answer = ({ shouldCopyAnswer = false, onAnswered }) => {
     };
     get();
   }, []);
-
-  // TODO add answer to global context?
 
   return (
     <Box>
